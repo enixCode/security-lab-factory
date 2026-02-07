@@ -1,0 +1,241 @@
+# Cloud Security Skills and Challenges
+# Domain: AWS, Azure, GCP Security
+
+domain: cloud-security
+description: "Cloud infrastructure security testing and exploitation"
+
+categories:
+  aws:
+    name: "AWS Security"
+    challenges:
+      - id: aws-enum
+        name: "AWS Enumeration"
+        difficulty: medium
+        description: "Enumerate AWS resources and permissions"
+        skills:
+          - AWS CLI
+          - IAM enumeration
+          - S3 bucket discovery
+        flags: 3
+
+      - id: aws-ssrf-imds
+        name: "IMDS Exploitation"
+        difficulty: medium
+        description: "Exploit SSRF to access EC2 metadata"
+        skills:
+          - Instance metadata
+          - Role credential theft
+        flags: 2
+
+      - id: aws-s3-misconfig
+        name: "S3 Bucket Misconfigurations"
+        difficulty: easy
+        description: "Find and exploit public S3 buckets"
+        skills:
+          - Bucket enumeration
+          - ACL analysis
+        flags: 2
+
+      - id: aws-privesc
+        name: "AWS IAM Privilege Escalation"
+        difficulty: hard
+        description: "Escalate privileges through IAM misconfigs"
+        skills:
+          - IAM policy analysis
+          - Assume role attacks
+          - Lambda exploitation
+        flags: 4
+
+      - id: aws-lambda
+        name: "Lambda Security"
+        difficulty: hard
+        description: "Exploit serverless vulnerabilities"
+        skills:
+          - Function enumeration
+          - Environment variable extraction
+          - Layer poisoning
+        flags: 3
+
+  azure:
+    name: "Azure Security"
+    challenges:
+      - id: azure-enum
+        name: "Azure Enumeration"
+        difficulty: medium
+        description: "Enumerate Azure AD and resources"
+        skills:
+          - Azure CLI
+          - Az PowerShell
+          - ROADtools
+        flags: 3
+
+      - id: azure-ad-attack
+        name: "Azure AD Attacks"
+        difficulty: hard
+        description: "Attack Azure Active Directory"
+        skills:
+          - Password spray
+          - Token theft
+          - Consent phishing
+        flags: 3
+
+      - id: azure-blob
+        name: "Blob Storage Attacks"
+        difficulty: medium
+        description: "Exploit Azure blob misconfigurations"
+        skills:
+          - Anonymous access
+          - SAS token abuse
+        flags: 2
+
+      - id: azure-managed-id
+        name: "Managed Identity Exploitation"
+        difficulty: hard
+        description: "Abuse managed identities for privilege escalation"
+        skills:
+          - IMDS exploitation
+          - Token extraction
+        flags: 2
+
+  gcp:
+    name: "GCP Security"
+    challenges:
+      - id: gcp-enum
+        name: "GCP Enumeration"
+        difficulty: medium
+        description: "Enumerate GCP projects and resources"
+        skills:
+          - gcloud CLI
+          - Service account discovery
+        flags: 2
+
+      - id: gcp-metadata
+        name: "Metadata Server Exploitation"
+        difficulty: medium
+        description: "Access GCP metadata for credentials"
+        skills:
+          - Metadata API
+          - Token theft
+        flags: 2
+
+      - id: gcp-privesc
+        name: "GCP Privilege Escalation"
+        difficulty: hard
+        description: "Escalate privileges in GCP"
+        skills:
+          - IAM misconfiguration
+          - Service account impersonation
+        flags: 3
+
+  kubernetes:
+    name: "Kubernetes Security"
+    challenges:
+      - id: k8s-enum
+        name: "Kubernetes Enumeration"
+        difficulty: medium
+        description: "Enumerate Kubernetes cluster"
+        skills:
+          - kubectl
+          - API server access
+          - Secret extraction
+        flags: 3
+
+      - id: k8s-escape
+        name: "Container Escape"
+        difficulty: hard
+        description: "Escape from container to host"
+        skills:
+          - Privileged containers
+          - Host path mounts
+          - Kernel exploits
+        flags: 2
+
+      - id: k8s-privesc
+        name: "K8s Privilege Escalation"
+        difficulty: hard
+        description: "Escalate from pod to cluster admin"
+        skills:
+          - RBAC abuse
+          - Service account tokens
+          - Node compromise
+        flags: 4
+
+      - id: k8s-network
+        name: "K8s Network Attacks"
+        difficulty: expert
+        description: "Attack Kubernetes networking"
+        skills:
+          - Network policies bypass
+          - Service mesh exploitation
+          - DNS manipulation
+        flags: 3
+
+  terraform:
+    name: "Infrastructure as Code Security"
+    challenges:
+      - id: tf-secrets
+        name: "Terraform Secrets Exposure"
+        difficulty: easy
+        description: "Find secrets in Terraform state/code"
+        skills:
+          - State file analysis
+          - Variable extraction
+        flags: 2
+
+      - id: tf-misconfig
+        name: "IaC Misconfigurations"
+        difficulty: medium
+        description: "Identify insecure Terraform configurations"
+        skills:
+          - Security scanning
+          - Best practice violations
+        flags: 3
+
+templates:
+  cloud_labs:
+    - name: "LocalStack AWS Lab"
+      description: "Local AWS simulation with LocalStack"
+      services:
+        - localstack
+        - attacker
+      features:
+        - S3
+        - IAM
+        - Lambda
+        - EC2 metadata simulation
+
+    - name: "Kind Kubernetes Lab"
+      description: "Local K8s cluster for testing"
+      services:
+        - kind-cluster
+        - attacker
+      features:
+        - Multi-node cluster
+        - Vulnerable RBAC
+        - Exposed secrets
+
+    - name: "Multi-Cloud Lab"
+      description: "Simulated multi-cloud environment"
+      services:
+        - localstack
+        - azurite
+        - gcp-emulator
+        - attacker
+
+resources:
+  tools:
+    - "AWS CLI"
+    - "Azure CLI"
+    - "gcloud"
+    - "kubectl"
+    - "Pacu"
+    - "ScoutSuite"
+    - "Prowler"
+    - "kube-hunter"
+    - "trivy"
+
+  references:
+    - "HackTricks Cloud"
+    - "CloudGoat"
+    - "Kubernetes Goat"
+    - "Rhino Security Labs Blog"

@@ -1,0 +1,124 @@
+# Full Stack Development Environment
+# Usage: docker-compose -f fullstack-dev.yaml up -d
+# Includes: Node.js backend, React frontend, PostgreSQL, Redis, Adminer
+
+version: '3.8'
+
+networks:
+  dev-net:
+    driver: bridge
+
+services:
+  # React Frontend
+  frontend:
+    image: node:20-alpine
+    container_name: dev-frontend
+    working_dir: /app
+    ports:
+      - "3000:3000"
+    networks:
+      - dev-net
+    volumes:
+      - ./frontend:/app
+      - frontend-node-modules:/app/node_modules
+    environment:
+      - NODE_ENV=development
+      - VITE_API_URL=http://localhost:4000
+    command: sh -c "npm install && npm run dev -- --host 0.0.0.0"
+    restart: unless-stopped
+
+  # Node.js Backend
+  backend:
+    image: node:20-alpine
+    container_name: dev-backend
+    working_dir: /app
+    ports:
+      - "4000:4000"
+      - "9229:9229"  # Debug port
+    networks:
+      - dev-net
+    volumes:
+      - ./backend:/app
+      - backend-node-modules:/app/node_modules
+    environment:
+      - NODE_ENV=development
+      - PORT=4000
+      - DATABASE_URL=postgresql://dev:dev@postgres:5432/devdb
+      - REDIS_URL=redis://redis:6379
+    command: sh -c "npm install && npm run dev"
+    depends_on:
+      - postgres
+      - redis
+    restart: unless-stopped
+
+  # PostgreSQL Database
+  postgres:
+    image: postgres:16-alpine
+    container_name: dev-postgres
+    ports:
+      - "5432:5432"
+    networks:
+      - dev-net
+    environment:
+      - POSTGRES_USER=dev
+      - POSTGRES_PASSWORD=dev
+      - POSTGRES_DB=devdb
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./init-scripts:/docker-entrypoint-initdb.d
+    restart: unless-stopped
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: dev-redis
+    ports:
+      - "6379:6379"
+    networks:
+      - dev-net
+    volumes:
+      - redis-data:/data
+    restart: unless-stopped
+
+  # Database Admin UI
+  adminer:
+    image: adminer
+    container_name: dev-adminer
+    ports:
+      - "8080:8080"
+    networks:
+      - dev-net
+    depends_on:
+      - postgres
+    restart: unless-stopped
+
+  # Redis Commander UI
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: dev-redis-commander
+    ports:
+      - "8081:8081"
+    networks:
+      - dev-net
+    environment:
+      - REDIS_HOSTS=local:redis:6379
+    depends_on:
+      - redis
+    restart: unless-stopped
+
+  # MailHog (Email Testing)
+  mailhog:
+    image: mailhog/mailhog
+    container_name: dev-mailhog
+    ports:
+      - "1025:1025"  # SMTP
+      - "8025:8025"  # Web UI
+    networks:
+      - dev-net
+    restart: unless-stopped
+
+volumes:
+  frontend-node-modules:
+  backend-node-modules:
+  postgres-data:
+  redis-data:

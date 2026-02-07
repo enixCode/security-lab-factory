@@ -1,0 +1,290 @@
+# DevOps Security Skills and Challenges
+# Domain: CI/CD, Container Security, Infrastructure as Code
+
+domain: devops
+description: "DevSecOps, CI/CD security, and infrastructure automation"
+
+categories:
+  container_security:
+    name: "Container Security"
+    challenges:
+      - id: docker-basics
+        name: "Docker Security Basics"
+        difficulty: easy
+        description: "Understand Docker security fundamentals"
+        skills:
+          - Docker daemon
+          - Image security
+          - Container isolation
+        flags: 2
+
+      - id: docker-escape
+        name: "Container Escape"
+        difficulty: hard
+        description: "Escape from Docker containers"
+        skills:
+          - Privileged containers
+          - Capabilities abuse
+          - Socket mounting
+        flags: 3
+
+      - id: image-security
+        name: "Image Vulnerability Scanning"
+        difficulty: medium
+        description: "Scan and secure container images"
+        skills:
+          - Trivy
+          - Grype
+          - Base image selection
+        flags: 2
+
+      - id: docker-hardening
+        name: "Docker Hardening"
+        difficulty: medium
+        description: "Implement Docker security best practices"
+        skills:
+          - Seccomp profiles
+          - AppArmor
+          - Read-only containers
+        flags: 3
+
+  cicd_security:
+    name: "CI/CD Pipeline Security"
+    challenges:
+      - id: secrets-leak
+        name: "Pipeline Secrets Exposure"
+        difficulty: easy
+        description: "Find and fix secret leaks in CI/CD"
+        skills:
+          - Secret scanning
+          - Git history
+          - Environment variables
+        flags: 2
+
+      - id: pipeline-injection
+        name: "Pipeline Injection"
+        difficulty: medium
+        description: "Exploit CI/CD pipeline injection flaws"
+        skills:
+          - Command injection
+          - Script injection
+          - YAML injection
+        flags: 3
+
+      - id: supply-chain
+        name: "Supply Chain Attacks"
+        difficulty: hard
+        description: "Understand and prevent supply chain attacks"
+        skills:
+          - Dependency confusion
+          - Typosquatting
+          - SBOM
+        flags: 2
+
+      - id: artifact-security
+        name: "Build Artifact Security"
+        difficulty: medium
+        description: "Secure build artifacts and registries"
+        skills:
+          - Signing
+          - Verification
+          - Registry security
+        flags: 2
+
+  infrastructure_as_code:
+    name: "Infrastructure as Code Security"
+    challenges:
+      - id: terraform-scan
+        name: "Terraform Security Scanning"
+        difficulty: easy
+        description: "Scan Terraform for misconfigurations"
+        skills:
+          - tfsec
+          - checkov
+          - Best practices
+        flags: 2
+
+      - id: ansible-security
+        name: "Ansible Security"
+        difficulty: medium
+        description: "Secure Ansible playbooks and vault"
+        skills:
+          - Ansible vault
+          - Secure playbooks
+          - Privilege escalation
+        flags: 2
+
+      - id: helm-security
+        name: "Helm Chart Security"
+        difficulty: medium
+        description: "Audit and secure Helm charts"
+        skills:
+          - Template injection
+          - RBAC templates
+          - Secure values
+        flags: 2
+
+  gitops:
+    name: "GitOps Security"
+    challenges:
+      - id: git-secrets
+        name: "Git Secret Scanning"
+        difficulty: easy
+        description: "Find secrets in Git repositories"
+        skills:
+          - truffleHog
+          - git-secrets
+          - gitleaks
+        flags: 2
+
+      - id: git-hooks
+        name: "Pre-commit Security Hooks"
+        difficulty: easy
+        description: "Implement security pre-commit hooks"
+        skills:
+          - pre-commit framework
+          - Hook configuration
+          - Automation
+        flags: 1
+
+      - id: branch-protection
+        name: "Git Branch Protection"
+        difficulty: medium
+        description: "Configure secure branch policies"
+        skills:
+          - Branch protection rules
+          - Required reviews
+          - Status checks
+        flags: 2
+
+  monitoring_security:
+    name: "Security Monitoring"
+    challenges:
+      - id: log-aggregation
+        name: "Centralized Logging"
+        difficulty: medium
+        description: "Set up secure log aggregation"
+        skills:
+          - ELK Stack
+          - Fluentd
+          - Log security
+        flags: 2
+
+      - id: security-alerts
+        name: "Security Alerting"
+        difficulty: medium
+        description: "Configure security alerts and dashboards"
+        skills:
+          - Alert rules
+          - Grafana dashboards
+          - Incident triggers
+        flags: 3
+
+      - id: audit-logging
+        name: "Audit Logging"
+        difficulty: medium
+        description: "Implement comprehensive audit logging"
+        skills:
+          - Kubernetes audit
+          - Cloud trail
+          - Log integrity
+        flags: 2
+
+  secrets_management:
+    name: "Secrets Management"
+    challenges:
+      - id: vault-basics
+        name: "HashiCorp Vault Basics"
+        difficulty: medium
+        description: "Manage secrets with Vault"
+        skills:
+          - Vault setup
+          - Secret engines
+          - Authentication
+        flags: 3
+
+      - id: vault-k8s
+        name: "Vault with Kubernetes"
+        difficulty: hard
+        description: "Integrate Vault with Kubernetes"
+        skills:
+          - K8s auth method
+          - Sidecar injection
+          - Dynamic secrets
+        flags: 3
+
+      - id: external-secrets
+        name: "External Secrets Operator"
+        difficulty: medium
+        description: "Manage secrets with ESO"
+        skills:
+          - ESO configuration
+          - Cloud provider integration
+          - Secret sync
+        flags: 2
+
+templates:
+  devops_labs:
+    - name: "CI/CD Security Lab"
+      services:
+        - jenkins
+        - gitea
+        - registry
+        - sonarqube
+      features:
+        - Vulnerable pipeline
+        - Secret exposure
+        - Injection points
+
+    - name: "Container Security Lab"
+      services:
+        - docker-in-docker
+        - vulnerable-images
+        - trivy-server
+      features:
+        - Escape scenarios
+        - Vulnerable images
+        - Scanning tools
+
+    - name: "GitOps Lab"
+      services:
+        - gitea
+        - argocd
+        - vault
+      features:
+        - Secret management
+        - Deployment automation
+        - Policy enforcement
+
+    - name: "Full DevSecOps Lab"
+      services:
+        - gitlab
+        - jenkins
+        - sonarqube
+        - trivy
+        - vault
+        - argocd
+        - kind
+      features:
+        - Complete pipeline
+        - Security gates
+        - Policy as code
+
+resources:
+  tools:
+    - "Trivy"
+    - "Grype"
+    - "tfsec"
+    - "checkov"
+    - "gitleaks"
+    - "truffleHog"
+    - "Snyk"
+    - "SonarQube"
+    - "HashiCorp Vault"
+    - "Falco"
+
+  references:
+    - "OWASP DevSecOps Guideline"
+    - "CIS Docker Benchmark"
+    - "NIST Container Security Guide"
+    - "DevSecOps.org"

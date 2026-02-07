@@ -1,0 +1,252 @@
+# Network Security Skills and Challenges
+# Domain: Network Penetration Testing, Active Directory, Infrastructure
+
+domain: network-security
+description: "Network infrastructure security testing and exploitation"
+
+categories:
+  reconnaissance:
+    name: "Network Reconnaissance"
+    challenges:
+      - id: nmap-basics
+        name: "Nmap Fundamentals"
+        difficulty: easy
+        description: "Master network scanning with Nmap"
+        skills:
+          - Port scanning
+          - Service detection
+          - OS fingerprinting
+        flags: 2
+
+      - id: passive-recon
+        name: "Passive Reconnaissance"
+        difficulty: medium
+        description: "Gather intelligence without active scanning"
+        skills:
+          - OSINT
+          - DNS enumeration
+          - Subdomain discovery
+        flags: 2
+
+  active_directory:
+    name: "Active Directory Attacks"
+    challenges:
+      - id: ad-enum
+        name: "AD Enumeration"
+        difficulty: medium
+        description: "Enumerate Active Directory environment"
+        skills:
+          - LDAP queries
+          - BloodHound
+          - PowerView
+        flags: 3
+        docker_services:
+          - "windows-dc"
+          - "windows-workstation"
+
+      - id: kerberoasting
+        name: "Kerberoasting"
+        difficulty: medium
+        description: "Extract and crack service account hashes"
+        skills:
+          - Kerberos protocol
+          - Hash cracking
+        flags: 2
+
+      - id: asreproast
+        name: "AS-REP Roasting"
+        difficulty: medium
+        description: "Attack accounts without pre-authentication"
+        skills:
+          - Kerberos vulnerabilities
+          - GetNPUsers
+        flags: 2
+
+      - id: pass-the-hash
+        name: "Pass the Hash"
+        difficulty: medium
+        description: "Lateral movement using NTLM hashes"
+        skills:
+          - NTLM protocol
+          - Mimikatz
+          - CrackMapExec
+        flags: 2
+
+      - id: golden-ticket
+        name: "Golden Ticket Attack"
+        difficulty: hard
+        description: "Forge Kerberos tickets for persistence"
+        skills:
+          - KRBTGT hash extraction
+          - Ticket forging
+        flags: 3
+
+      - id: dcsync
+        name: "DCSync Attack"
+        difficulty: hard
+        description: "Extract all domain credentials"
+        skills:
+          - Replication rights
+          - Secretsdump
+        flags: 2
+
+  lateral_movement:
+    name: "Lateral Movement"
+    challenges:
+      - id: psexec
+        name: "PsExec and WMI"
+        difficulty: medium
+        description: "Move laterally using Windows protocols"
+        skills:
+          - SMB
+          - WMI
+          - Remote execution
+        flags: 2
+
+      - id: ssh-pivoting
+        name: "SSH Pivoting"
+        difficulty: medium
+        description: "Pivot through compromised hosts"
+        skills:
+          - SSH tunneling
+          - ProxyChains
+          - Dynamic port forwarding
+        flags: 3
+
+      - id: chisel-tunnel
+        name: "Chisel Tunneling"
+        difficulty: hard
+        description: "Create reverse tunnels for pivoting"
+        skills:
+          - Reverse tunnels
+          - SOCKS proxy
+        flags: 2
+
+  privilege_escalation:
+    name: "Privilege Escalation"
+    challenges:
+      - id: linux-privesc
+        name: "Linux Privilege Escalation"
+        difficulty: medium
+        description: "Escalate privileges on Linux systems"
+        skills:
+          - SUID binaries
+          - Sudo misconfigs
+          - Kernel exploits
+          - Cron jobs
+        flags: 5
+
+      - id: windows-privesc
+        name: "Windows Privilege Escalation"
+        difficulty: medium
+        description: "Escalate privileges on Windows systems"
+        skills:
+          - Service misconfigs
+          - Token impersonation
+          - UAC bypass
+          - Unquoted paths
+        flags: 5
+
+  network_attacks:
+    name: "Network Protocol Attacks"
+    challenges:
+      - id: arp-poison
+        name: "ARP Poisoning"
+        difficulty: medium
+        description: "Man-in-the-middle via ARP spoofing"
+        skills:
+          - ARP protocol
+          - Traffic interception
+          - Ettercap/Bettercap
+        flags: 2
+
+      - id: llmnr-poison
+        name: "LLMNR/NBT-NS Poisoning"
+        difficulty: medium
+        description: "Capture NTLMv2 hashes via poisoning"
+        skills:
+          - Responder
+          - Hash cracking
+        flags: 2
+
+      - id: dns-attacks
+        name: "DNS Attacks"
+        difficulty: hard
+        description: "DNS spoofing and zone transfers"
+        skills:
+          - DNS protocol
+          - Zone transfer
+          - DNS tunneling
+        flags: 3
+
+  wireless:
+    name: "Wireless Security"
+    challenges:
+      - id: wpa2-crack
+        name: "WPA2 Cracking"
+        difficulty: medium
+        description: "Capture and crack WPA2 handshakes"
+        skills:
+          - Aircrack-ng
+          - Handshake capture
+          - Dictionary attacks
+        flags: 2
+
+      - id: evil-twin
+        name: "Evil Twin Attack"
+        difficulty: hard
+        description: "Create rogue access points"
+        skills:
+          - Hostapd
+          - Credential harvesting
+        flags: 2
+
+templates:
+  network_labs:
+    - name: "Basic Network Lab"
+      services:
+        - router
+        - attacker
+        - victim-linux
+        - victim-windows
+      network: "10.10.10.0/24"
+
+    - name: "Active Directory Lab"
+      services:
+        - domain-controller
+        - workstation-1
+        - workstation-2
+        - file-server
+        - attacker
+      network: "192.168.1.0/24"
+      domain: "lab.local"
+
+    - name: "Multi-tier Network"
+      services:
+        - internet-router
+        - dmz-web
+        - dmz-mail
+        - internal-router
+        - internal-db
+        - internal-workstation
+      networks:
+        - dmz: "10.0.1.0/24"
+        - internal: "10.0.2.0/24"
+
+resources:
+  tools:
+    - "Nmap"
+    - "Metasploit"
+    - "BloodHound"
+    - "CrackMapExec"
+    - "Impacket"
+    - "Responder"
+    - "Mimikatz"
+    - "Chisel"
+    - "Ligolo-ng"
+
+  references:
+    - "HackTricks"
+    - "PayloadsAllTheThings"
+    - "The Hacker Recipes"
+    - "Active Directory Exploitation Cheat Sheet"

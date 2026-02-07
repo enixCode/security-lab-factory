@@ -1,0 +1,302 @@
+# Digital Forensics Skills and Challenges
+# Domain: DFIR, Memory Analysis, Disk Forensics
+
+domain: forensics
+description: "Digital forensics and incident response"
+
+categories:
+  disk_forensics:
+    name: "Disk Forensics"
+    challenges:
+      - id: disk-imaging
+        name: "Disk Imaging"
+        difficulty: easy
+        description: "Create and analyze forensic disk images"
+        skills:
+          - dd / dcfldd
+          - FTK Imager
+          - Hash verification
+        flags: 2
+
+      - id: file-recovery
+        name: "File Recovery"
+        difficulty: medium
+        description: "Recover deleted files from disk images"
+        skills:
+          - Autopsy
+          - foremost
+          - scalpel
+          - PhotoRec
+        flags: 3
+
+      - id: partition-analysis
+        name: "Partition Analysis"
+        difficulty: medium
+        description: "Analyze partition tables and hidden partitions"
+        skills:
+          - MBR/GPT analysis
+          - Hidden partitions
+          - Slack space
+        flags: 2
+
+      - id: filesystem-forensics
+        name: "Filesystem Forensics"
+        difficulty: hard
+        description: "Deep filesystem analysis (NTFS, ext4)"
+        skills:
+          - MFT analysis
+          - Journal analysis
+          - Alternate data streams
+        flags: 4
+
+  memory_forensics:
+    name: "Memory Forensics"
+    challenges:
+      - id: mem-basics
+        name: "Memory Analysis Basics"
+        difficulty: medium
+        description: "Basic memory dump analysis with Volatility"
+        skills:
+          - Volatility3
+          - Process listing
+          - Network connections
+        flags: 3
+
+      - id: mem-malware
+        name: "Malware in Memory"
+        difficulty: hard
+        description: "Find and analyze malware in memory dumps"
+        skills:
+          - Code injection
+          - Process hollowing
+          - Malfind plugin
+        flags: 4
+
+      - id: mem-credentials
+        name: "Credential Extraction"
+        difficulty: medium
+        description: "Extract credentials from memory"
+        skills:
+          - Mimikatz offline
+          - LSA secrets
+          - Browser passwords
+        flags: 3
+
+      - id: mem-timeline
+        name: "Memory Timeline Analysis"
+        difficulty: hard
+        description: "Create timeline from memory artifacts"
+        skills:
+          - Timeline creation
+          - Event correlation
+          - Attack reconstruction
+        flags: 3
+
+  log_analysis:
+    name: "Log Analysis"
+    challenges:
+      - id: linux-logs
+        name: "Linux Log Analysis"
+        difficulty: easy
+        description: "Analyze Linux system logs"
+        skills:
+          - syslog
+          - auth.log
+          - journalctl
+        flags: 2
+
+      - id: windows-logs
+        name: "Windows Event Log Analysis"
+        difficulty: medium
+        description: "Analyze Windows event logs"
+        skills:
+          - Security logs
+          - PowerShell logs
+          - Event IDs
+        flags: 3
+
+      - id: web-logs
+        name: "Web Server Log Analysis"
+        difficulty: medium
+        description: "Analyze Apache/Nginx access logs"
+        skills:
+          - Access log parsing
+          - Attack identification
+          - IP analysis
+        flags: 2
+
+      - id: siem-analysis
+        name: "SIEM Log Correlation"
+        difficulty: hard
+        description: "Correlate logs in SIEM platform"
+        skills:
+          - ELK Stack
+          - Splunk basics
+          - Alert creation
+        flags: 3
+
+  network_forensics:
+    name: "Network Forensics"
+    challenges:
+      - id: pcap-basics
+        name: "PCAP Analysis Basics"
+        difficulty: easy
+        description: "Analyze network captures with Wireshark"
+        skills:
+          - Wireshark filters
+          - Protocol analysis
+          - Stream extraction
+        flags: 2
+
+      - id: pcap-malware
+        name: "Malicious Traffic Analysis"
+        difficulty: medium
+        description: "Identify malware C2 in network traffic"
+        skills:
+          - C2 identification
+          - Beacon analysis
+          - DNS tunneling
+        flags: 3
+
+      - id: pcap-exfil
+        name: "Data Exfiltration Detection"
+        difficulty: hard
+        description: "Detect data exfiltration in captures"
+        skills:
+          - Protocol anomalies
+          - Covert channels
+          - Volume analysis
+        flags: 2
+
+  incident_response:
+    name: "Incident Response"
+    challenges:
+      - id: ir-triage
+        name: "Incident Triage"
+        difficulty: medium
+        description: "Perform initial incident triage"
+        skills:
+          - Data collection
+          - Initial analysis
+          - Prioritization
+        flags: 2
+
+      - id: ir-timeline
+        name: "Timeline Creation"
+        difficulty: hard
+        description: "Create attack timeline from artifacts"
+        skills:
+          - plaso/log2timeline
+          - MFT timeline
+          - Event correlation
+        flags: 4
+
+      - id: ir-rootkit
+        name: "Rootkit Detection"
+        difficulty: expert
+        description: "Detect and analyze rootkits"
+        skills:
+          - Hidden process detection
+          - Kernel analysis
+          - Hook detection
+        flags: 3
+
+      - id: ir-apt
+        name: "APT Investigation"
+        difficulty: expert
+        description: "Investigate advanced persistent threat"
+        skills:
+          - Lateral movement tracing
+          - Persistence mechanisms
+          - IOC extraction
+        flags: 5
+
+  steganography:
+    name: "Steganography"
+    challenges:
+      - id: steg-image
+        name: "Image Steganography"
+        difficulty: easy
+        description: "Extract hidden data from images"
+        skills:
+          - steghide
+          - zsteg
+          - binwalk
+        flags: 2
+
+      - id: steg-audio
+        name: "Audio Steganography"
+        difficulty: medium
+        description: "Find hidden messages in audio"
+        skills:
+          - Spectrogram analysis
+          - Audacity
+          - LSB extraction
+        flags: 2
+
+      - id: steg-advanced
+        name: "Advanced Steganography"
+        difficulty: hard
+        description: "Detect sophisticated stego techniques"
+        skills:
+          - Statistical analysis
+          - Custom algorithms
+          - Encryption
+        flags: 3
+
+templates:
+  forensics_labs:
+    - name: "DFIR Workstation"
+      services:
+        - sift-workstation
+      tools:
+        - Autopsy
+        - Volatility3
+        - Plaso
+        - Sleuthkit
+
+    - name: "Memory Analysis Lab"
+      services:
+        - volatility-workstation
+      samples:
+        - Windows memory dumps
+        - Linux memory dumps
+        - Infected samples
+
+    - name: "Network Forensics Lab"
+      services:
+        - wireshark-workstation
+        - zeek
+        - arkime
+      captures:
+        - Normal traffic
+        - Malware C2
+        - Exfiltration samples
+
+    - name: "Full IR Lab"
+      services:
+        - sift
+        - elk-stack
+        - case-management
+      features:
+        - Evidence storage
+        - Timeline tools
+        - Reporting
+
+resources:
+  tools:
+    - "Autopsy"
+    - "Volatility3"
+    - "Sleuthkit"
+    - "Wireshark"
+    - "FTK Imager"
+    - "Plaso"
+    - "KAPE"
+    - "Eric Zimmerman Tools"
+    - "Velociraptor"
+
+  references:
+    - "SANS DFIR Posters"
+    - "13Cubed Videos"
+    - "DFIR.training"
+    - "Cyber Defenders Blue Team Labs"

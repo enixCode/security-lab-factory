@@ -1,0 +1,332 @@
+# Development Skills and Challenges
+# Domain: Development Environments, Testing, Debugging
+
+domain: development
+description: "Development environments, testing frameworks, and debugging"
+
+categories:
+  web_development:
+    name: "Web Development Environments"
+    challenges:
+      - id: nodejs-env
+        name: "Node.js Development"
+        difficulty: easy
+        description: "Set up Node.js development environment"
+        skills:
+          - Node.js
+          - npm/yarn
+          - Hot reload
+        flags: 1
+        tools:
+          - node
+          - nodemon
+          - npm
+
+      - id: python-env
+        name: "Python Development"
+        difficulty: easy
+        description: "Set up Python development environment"
+        skills:
+          - Python
+          - pip/poetry
+          - Virtual environments
+        flags: 1
+        tools:
+          - python
+          - poetry
+          - pip
+
+      - id: react-env
+        name: "React Development"
+        difficulty: easy
+        description: "Set up React development with hot reload"
+        skills:
+          - React
+          - Vite/CRA
+          - Hot module replacement
+        flags: 1
+
+      - id: fullstack-env
+        name: "Full Stack Development"
+        difficulty: medium
+        description: "Set up complete full-stack environment"
+        skills:
+          - Frontend + Backend
+          - Database
+          - Reverse proxy
+        flags: 2
+
+  database_development:
+    name: "Database Development"
+    challenges:
+      - id: postgres-dev
+        name: "PostgreSQL Development"
+        difficulty: easy
+        description: "PostgreSQL development environment"
+        skills:
+          - PostgreSQL
+          - pgAdmin
+          - Migrations
+        flags: 1
+
+      - id: mongodb-dev
+        name: "MongoDB Development"
+        difficulty: easy
+        description: "MongoDB development environment"
+        skills:
+          - MongoDB
+          - Mongo Express
+          - Replica sets
+        flags: 1
+
+      - id: redis-dev
+        name: "Redis Development"
+        difficulty: easy
+        description: "Redis development and caching"
+        skills:
+          - Redis
+          - Redis Commander
+          - Caching patterns
+        flags: 1
+
+      - id: multi-db
+        name: "Multi-Database Environment"
+        difficulty: medium
+        description: "Environment with multiple databases"
+        skills:
+          - Database selection
+          - Data modeling
+          - Cross-db patterns
+        flags: 2
+
+  api_development:
+    name: "API Development"
+    challenges:
+      - id: rest-api
+        name: "REST API Development"
+        difficulty: medium
+        description: "Build and test REST APIs"
+        skills:
+          - REST principles
+          - OpenAPI/Swagger
+          - API testing
+        flags: 2
+
+      - id: graphql-dev
+        name: "GraphQL Development"
+        difficulty: medium
+        description: "Build GraphQL APIs"
+        skills:
+          - GraphQL schema
+          - Resolvers
+          - Apollo/Relay
+        flags: 2
+
+      - id: grpc-dev
+        name: "gRPC Development"
+        difficulty: hard
+        description: "Build gRPC services"
+        skills:
+          - Protocol Buffers
+          - gRPC
+          - Streaming
+        flags: 2
+
+  testing:
+    name: "Testing Environments"
+    challenges:
+      - id: unit-testing
+        name: "Unit Testing Setup"
+        difficulty: easy
+        description: "Set up unit testing framework"
+        skills:
+          - Jest/PyTest/Go Test
+          - Test coverage
+          - Mocking
+        flags: 1
+
+      - id: integration-testing
+        name: "Integration Testing"
+        difficulty: medium
+        description: "Set up integration tests with Docker"
+        skills:
+          - Testcontainers
+          - Database testing
+          - API testing
+        flags: 2
+
+      - id: e2e-testing
+        name: "End-to-End Testing"
+        difficulty: medium
+        description: "Set up E2E testing framework"
+        skills:
+          - Playwright/Cypress
+          - Browser automation
+          - Visual testing
+        flags: 2
+
+      - id: load-testing
+        name: "Load Testing"
+        difficulty: medium
+        description: "Set up load and performance testing"
+        skills:
+          - k6
+          - Artillery
+          - JMeter
+        flags: 2
+
+  debugging:
+    name: "Debugging Environments"
+    challenges:
+      - id: vscode-debug
+        name: "VS Code Debugging"
+        difficulty: easy
+        description: "Configure VS Code debugging"
+        skills:
+          - launch.json
+          - Breakpoints
+          - Remote debugging
+        flags: 1
+
+      - id: remote-debug
+        name: "Remote Debugging"
+        difficulty: medium
+        description: "Debug containers remotely"
+        skills:
+          - Debug protocols
+          - Port forwarding
+          - Source mapping
+        flags: 2
+
+      - id: profiling
+        name: "Performance Profiling"
+        difficulty: medium
+        description: "Profile application performance"
+        skills:
+          - CPU profiling
+          - Memory profiling
+          - Flame graphs
+        flags: 2
+
+  microservices:
+    name: "Microservices Development"
+    challenges:
+      - id: docker-compose-dev
+        name: "Docker Compose Development"
+        difficulty: medium
+        description: "Multi-service development with Docker Compose"
+        skills:
+          - Service composition
+          - Networking
+          - Volume mounts
+        flags: 2
+
+      - id: service-mesh-dev
+        name: "Service Mesh Development"
+        difficulty: hard
+        description: "Develop with Istio/Linkerd"
+        skills:
+          - Service mesh
+          - Traffic management
+          - Observability
+        flags: 3
+
+      - id: event-driven
+        name: "Event-Driven Architecture"
+        difficulty: hard
+        description: "Develop event-driven microservices"
+        skills:
+          - Kafka/RabbitMQ
+          - Event sourcing
+          - CQRS
+        flags: 3
+
+  documentation:
+    name: "Documentation"
+    challenges:
+      - id: api-docs
+        name: "API Documentation"
+        difficulty: easy
+        description: "Generate API documentation"
+        skills:
+          - Swagger UI
+          - ReDoc
+          - OpenAPI
+        flags: 1
+
+      - id: code-docs
+        name: "Code Documentation"
+        difficulty: easy
+        description: "Generate code documentation"
+        skills:
+          - JSDoc/Sphinx/GoDoc
+          - Documentation sites
+          - Examples
+        flags: 1
+
+templates:
+  development_labs:
+    - name: "MERN Stack"
+      description: "MongoDB, Express, React, Node.js"
+      services:
+        - frontend: "node:18-alpine"
+        - backend: "node:18-alpine"
+        - mongodb: "mongo:6"
+        - mongo-express: "mongo-express"
+      features:
+        - Hot reload
+        - Debug ports
+        - Volume mounts
+
+    - name: "Python Django Stack"
+      description: "Django, PostgreSQL, Redis, Celery"
+      services:
+        - web: "python:3.11"
+        - db: "postgres:15"
+        - redis: "redis:7"
+        - celery: "python:3.11"
+      features:
+        - Django debug toolbar
+        - Database admin
+        - Task monitoring
+
+    - name: "Go Microservices"
+      description: "Go services with gRPC and Kafka"
+      services:
+        - api-gateway: "golang:1.21"
+        - service-a: "golang:1.21"
+        - service-b: "golang:1.21"
+        - kafka: "confluentinc/cp-kafka"
+        - postgres: "postgres:15"
+      features:
+        - Air hot reload
+        - Delve debugging
+        - gRPC reflection
+
+    - name: "Full Stack Testing"
+      description: "Complete testing environment"
+      services:
+        - app: "node:18"
+        - db: "postgres:15"
+        - playwright: "mcr.microsoft.com/playwright"
+        - k6: "grafana/k6"
+      features:
+        - Unit tests
+        - Integration tests
+        - E2E tests
+        - Load tests
+
+resources:
+  tools:
+    - "Docker"
+    - "Docker Compose"
+    - "VS Code"
+    - "Postman/Insomnia"
+    - "DBeaver"
+    - "Grafana"
+    - "Prometheus"
+
+  references:
+    - "Docker Documentation"
+    - "12 Factor App"
+    - "Microservices Patterns"

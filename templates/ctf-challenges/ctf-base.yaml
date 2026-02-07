@@ -1,0 +1,139 @@
+# CTF Challenge Base Template
+# Usage: docker-compose -f ctf-base.yaml up -d
+# Customize: Add your challenges and flags
+
+version: '3.8'
+
+networks:
+  ctf-net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.30.0.0/24
+
+services:
+  # CTF Scoreboard (CTFd)
+  ctfd:
+    image: ctfd/ctfd
+    container_name: ctfd
+    ports:
+      - "8000:8000"
+    networks:
+      ctf-net:
+        ipv4_address: 172.30.0.10
+    environment:
+      - SECRET_KEY=changeme_random_secret_key
+      - DATABASE_URL=mysql+pymysql://ctfd:ctfd@ctfd-db/ctfd
+      - REDIS_URL=redis://ctfd-redis:6379
+    volumes:
+      - ctfd-logs:/var/log/CTFd
+      - ctfd-uploads:/var/uploads
+    depends_on:
+      - ctfd-db
+      - ctfd-redis
+    restart: unless-stopped
+
+  ctfd-db:
+    image: mariadb:10
+    container_name: ctfd-db
+    networks:
+      ctf-net:
+        ipv4_address: 172.30.0.11
+    environment:
+      - MYSQL_ROOT_PASSWORD=ctfd_root_password
+      - MYSQL_USER=ctfd
+      - MYSQL_PASSWORD=ctfd
+      - MYSQL_DATABASE=ctfd
+    volumes:
+      - ctfd-db-data:/var/lib/mysql
+    restart: unless-stopped
+
+  ctfd-redis:
+    image: redis:7
+    container_name: ctfd-redis
+    networks:
+      ctf-net:
+        ipv4_address: 172.30.0.12
+    volumes:
+      - ctfd-redis-data:/data
+    restart: unless-stopped
+
+  # Web Challenge Template
+  web-challenge-1:
+    build:
+      context: ./challenges/web-1
+      dockerfile: Dockerfile
+    container_name: web-challenge-1
+    ports:
+      - "8001:80"
+    networks:
+      ctf-net:
+        ipv4_address: 172.30.0.20
+    environment:
+      - FLAG=FLAG{web_challenge_1_easy_flag}
+    restart: unless-stopped
+
+  # Crypto Challenge Template
+  crypto-challenge-1:
+    build:
+      context: ./challenges/crypto-1
+      dockerfile: Dockerfile
+    container_name: crypto-challenge-1
+    ports:
+      - "8002:5000"
+    networks:
+      ctf-net:
+        ipv4_address: 172.30.0.21
+    environment:
+      - FLAG=FLAG{crypto_rsa_weak_key_123}
+    restart: unless-stopped
+
+  # Pwn Challenge Template (with socat)
+  pwn-challenge-1:
+    build:
+      context: ./challenges/pwn-1
+      dockerfile: Dockerfile
+    container_name: pwn-challenge-1
+    ports:
+      - "9001:9001"
+    networks:
+      ctf-net:
+        ipv4_address: 172.30.0.22
+    cap_add:
+      - SYS_PTRACE
+    security_opt:
+      - seccomp:unconfined
+    restart: unless-stopped
+
+  # Forensics Challenge (file download)
+  forensics-challenge-1:
+    image: nginx:alpine
+    container_name: forensics-challenge-1
+    ports:
+      - "8003:80"
+    networks:
+      ctf-net:
+        ipv4_address: 172.30.0.23
+    volumes:
+      - ./challenges/forensics-1/files:/usr/share/nginx/html:ro
+    restart: unless-stopped
+
+  # Attacker Machine
+  attacker:
+    image: parrotsec/security
+    container_name: ctf-attacker
+    stdin_open: true
+    tty: true
+    networks:
+      ctf-net:
+        ipv4_address: 172.30.0.100
+    volumes:
+      - attacker-data:/root
+    restart: unless-stopped
+
+volumes:
+  ctfd-logs:
+  ctfd-uploads:
+  ctfd-db-data:
+  ctfd-redis-data:
+  attacker-data:

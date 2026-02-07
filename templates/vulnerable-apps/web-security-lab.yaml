@@ -1,0 +1,100 @@
+# Web Security Lab Template
+# Usage: docker-compose -f web-security-lab.yaml up -d
+# Includes: DVWA, Juice Shop, WebGoat, Mutillidae
+
+version: '3.8'
+
+networks:
+  web-security-net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/24
+
+services:
+  # Damn Vulnerable Web Application
+  dvwa:
+    image: vulnerables/web-dvwa
+    container_name: dvwa
+    ports:
+      - "8081:80"
+    networks:
+      web-security-net:
+        ipv4_address: 172.20.0.10
+    environment:
+      - MYSQL_DATABASE=dvwa
+    restart: unless-stopped
+    labels:
+      - "lab.name=Web Security Lab"
+      - "lab.service=DVWA"
+      - "lab.difficulty=easy-medium"
+      - "lab.flags=5"
+
+  # OWASP Juice Shop
+  juice-shop:
+    image: bkimminich/juice-shop
+    container_name: juice-shop
+    ports:
+      - "3000:3000"
+    networks:
+      web-security-net:
+        ipv4_address: 172.20.0.11
+    restart: unless-stopped
+    labels:
+      - "lab.name=Web Security Lab"
+      - "lab.service=Juice Shop"
+      - "lab.difficulty=easy-hard"
+      - "lab.flags=100+"
+
+  # WebGoat
+  webgoat:
+    image: webgoat/webgoat
+    container_name: webgoat
+    ports:
+      - "8082:8080"
+      - "9090:9090"
+    networks:
+      web-security-net:
+        ipv4_address: 172.20.0.12
+    environment:
+      - WEBGOAT_PORT=8080
+      - WEBWOLF_PORT=9090
+    restart: unless-stopped
+    labels:
+      - "lab.name=Web Security Lab"
+      - "lab.service=WebGoat"
+      - "lab.difficulty=beginner"
+
+  # Mutillidae II
+  mutillidae:
+    image: citizenstig/nowasp
+    container_name: mutillidae
+    ports:
+      - "8083:80"
+    networks:
+      web-security-net:
+        ipv4_address: 172.20.0.13
+    restart: unless-stopped
+    labels:
+      - "lab.name=Web Security Lab"
+      - "lab.service=Mutillidae"
+      - "lab.difficulty=easy-medium"
+
+  # Kali Linux Attacker
+  kali:
+    image: kalilinux/kali-rolling
+    container_name: kali-attacker
+    stdin_open: true
+    tty: true
+    networks:
+      web-security-net:
+        ipv4_address: 172.20.0.100
+    volumes:
+      - kali-data:/root
+    command: /bin/bash
+    labels:
+      - "lab.name=Web Security Lab"
+      - "lab.service=Attacker"
+
+volumes:
+  kali-data:

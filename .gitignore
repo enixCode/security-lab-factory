@@ -1,0 +1,47 @@
+# Generated labs (each lab should be committed separately if needed)
+labs/*
+!labs/.gitkeep
+
+# Docker
+*.log
+docker-compose.override.yml
+
+# Environment files
+.env
+.env.local
+*.env
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Solutions (don't commit decoded solutions)
+flags/solutions/*.txt
+!flags/solutions/*.b64
+
+# Node modules (if any frontend is added)
+node_modules/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Secrets
+*.pem
+*.key
+credentials.json
+secrets.yaml

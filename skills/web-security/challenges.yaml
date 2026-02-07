@@ -1,0 +1,245 @@
+# Web Security Skills and Challenges
+# Domain: OWASP Top 10, Web Application Security
+
+domain: web-security
+description: "Web application security testing and vulnerability exploitation"
+
+categories:
+  injection:
+    name: "Injection Attacks"
+    challenges:
+      - id: sqli-basic
+        name: "SQL Injection - Basic"
+        difficulty: easy
+        description: "Exploit a basic SQL injection in login form"
+        skills:
+          - SQL syntax
+          - Authentication bypass
+        flags: 1
+        docker_image: "vulnerables/web-dvwa"
+
+      - id: sqli-union
+        name: "SQL Injection - UNION Based"
+        difficulty: medium
+        description: "Extract data using UNION-based SQL injection"
+        skills:
+          - UNION SELECT attacks
+          - Database enumeration
+        flags: 2
+        docker_image: "vulnerables/web-dvwa"
+
+      - id: sqli-blind
+        name: "SQL Injection - Blind"
+        difficulty: hard
+        description: "Exploit time-based and boolean-based blind SQLi"
+        skills:
+          - Blind injection techniques
+          - Automation with sqlmap
+        flags: 3
+
+      - id: nosql-injection
+        name: "NoSQL Injection"
+        difficulty: medium
+        description: "Exploit MongoDB injection vulnerabilities"
+        skills:
+          - MongoDB query syntax
+          - JSON injection
+        flags: 2
+
+  xss:
+    name: "Cross-Site Scripting"
+    challenges:
+      - id: xss-reflected
+        name: "Reflected XSS"
+        difficulty: easy
+        description: "Find and exploit reflected XSS vulnerabilities"
+        skills:
+          - JavaScript basics
+          - URL encoding
+        flags: 1
+
+      - id: xss-stored
+        name: "Stored XSS"
+        difficulty: medium
+        description: "Exploit persistent XSS to steal cookies"
+        skills:
+          - DOM manipulation
+          - Cookie theft
+        flags: 2
+
+      - id: xss-dom
+        name: "DOM-based XSS"
+        difficulty: hard
+        description: "Exploit client-side JavaScript vulnerabilities"
+        skills:
+          - DOM analysis
+          - Source/sink tracing
+        flags: 2
+
+  authentication:
+    name: "Authentication Flaws"
+    challenges:
+      - id: auth-brute
+        name: "Brute Force Attack"
+        difficulty: easy
+        description: "Bypass weak authentication with brute force"
+        skills:
+          - Password attacks
+          - Rate limiting bypass
+        flags: 1
+
+      - id: auth-jwt
+        name: "JWT Vulnerabilities"
+        difficulty: medium
+        description: "Exploit JWT algorithm confusion and weak secrets"
+        skills:
+          - JWT structure
+          - Algorithm manipulation
+        flags: 3
+
+      - id: auth-oauth
+        name: "OAuth Misconfigurations"
+        difficulty: hard
+        description: "Exploit OAuth2 implementation flaws"
+        skills:
+          - OAuth2 flow
+          - Token theft
+        flags: 2
+
+  ssrf:
+    name: "Server-Side Request Forgery"
+    challenges:
+      - id: ssrf-basic
+        name: "Basic SSRF"
+        difficulty: medium
+        description: "Exploit SSRF to access internal services"
+        skills:
+          - URL manipulation
+          - Internal network discovery
+        flags: 2
+
+      - id: ssrf-cloud
+        name: "Cloud Metadata SSRF"
+        difficulty: hard
+        description: "Access cloud metadata endpoints via SSRF"
+        skills:
+          - AWS/GCP metadata
+          - IMDSv1/v2
+        flags: 3
+
+  file_vulnerabilities:
+    name: "File-based Vulnerabilities"
+    challenges:
+      - id: lfi
+        name: "Local File Inclusion"
+        difficulty: medium
+        description: "Exploit LFI to read sensitive files"
+        skills:
+          - Path traversal
+          - Log poisoning
+        flags: 2
+
+      - id: rfi
+        name: "Remote File Inclusion"
+        difficulty: hard
+        description: "Achieve RCE through RFI"
+        skills:
+          - Remote code execution
+          - Reverse shells
+        flags: 2
+
+      - id: file-upload
+        name: "Unrestricted File Upload"
+        difficulty: medium
+        description: "Bypass file upload restrictions"
+        skills:
+          - MIME type bypass
+          - Extension tricks
+        flags: 2
+
+  deserialization:
+    name: "Insecure Deserialization"
+    challenges:
+      - id: php-deserial
+        name: "PHP Object Injection"
+        difficulty: hard
+        description: "Exploit PHP unserialize vulnerabilities"
+        skills:
+          - PHP object injection
+          - Magic methods
+        flags: 2
+
+      - id: java-deserial
+        name: "Java Deserialization"
+        difficulty: expert
+        description: "Exploit Java deserialization with gadget chains"
+        skills:
+          - Ysoserial
+          - Gadget chains
+        flags: 3
+
+  api_security:
+    name: "API Security"
+    challenges:
+      - id: api-bola
+        name: "Broken Object Level Authorization"
+        difficulty: medium
+        description: "Exploit IDOR in REST APIs"
+        skills:
+          - API enumeration
+          - Authorization bypass
+        flags: 2
+
+      - id: api-mass-assign
+        name: "Mass Assignment"
+        difficulty: medium
+        description: "Exploit mass assignment vulnerabilities"
+        skills:
+          - Parameter pollution
+          - Privilege escalation
+        flags: 2
+
+      - id: graphql
+        name: "GraphQL Attacks"
+        difficulty: hard
+        description: "Exploit GraphQL introspection and injection"
+        skills:
+          - GraphQL queries
+          - Schema extraction
+        flags: 3
+
+templates:
+  vulnerable_apps:
+    - name: "DVWA"
+      image: "vulnerables/web-dvwa"
+      description: "Damn Vulnerable Web Application"
+
+    - name: "OWASP Juice Shop"
+      image: "bkimminich/juice-shop"
+      description: "Modern vulnerable web application"
+
+    - name: "WebGoat"
+      image: "webgoat/webgoat"
+      description: "OWASP WebGoat training platform"
+
+    - name: "Mutillidae"
+      image: "citizenstig/nowasp"
+      description: "OWASP Mutillidae II"
+
+    - name: "bWAPP"
+      image: "raesene/bwapp"
+      description: "Buggy Web Application"
+
+resources:
+  tools:
+    - "Burp Suite"
+    - "OWASP ZAP"
+    - "sqlmap"
+    - "XSStrike"
+    - "ffuf"
+    - "nuclei"
+
+  references:
+    - "OWASP Testing Guide"
+    - "PortSwigger Web Security Academy"
+    - "HackTricks"

@@ -1,0 +1,289 @@
+# Reverse Engineering Skills and Challenges
+# Domain: Binary Analysis, Malware Analysis, Debugging
+
+domain: reverse-engineering
+description: "Binary reverse engineering and malware analysis"
+
+categories:
+  binary_basics:
+    name: "Binary Fundamentals"
+    challenges:
+      - id: elf-basics
+        name: "ELF Binary Basics"
+        difficulty: easy
+        description: "Understand ELF binary structure"
+        skills:
+          - ELF format
+          - File headers
+          - Sections and segments
+        flags: 2
+
+      - id: pe-basics
+        name: "PE Binary Basics"
+        difficulty: easy
+        description: "Understand Windows PE format"
+        skills:
+          - PE format
+          - Import/Export tables
+          - Sections
+        flags: 2
+
+      - id: strings-analysis
+        name: "String Analysis"
+        difficulty: easy
+        description: "Extract information from binary strings"
+        skills:
+          - strings command
+          - Encoding detection
+          - Obfuscation identification
+        flags: 2
+
+  static_analysis:
+    name: "Static Analysis"
+    challenges:
+      - id: disassembly
+        name: "Disassembly Reading"
+        difficulty: medium
+        description: "Read and understand x86/x64 assembly"
+        skills:
+          - x86 instructions
+          - Function identification
+          - Control flow
+        flags: 3
+
+      - id: ghidra-basics
+        name: "Ghidra Fundamentals"
+        difficulty: medium
+        description: "Use Ghidra for binary analysis"
+        skills:
+          - Ghidra navigation
+          - Decompilation
+          - Function analysis
+        flags: 3
+
+      - id: ida-basics
+        name: "IDA Pro Basics"
+        difficulty: medium
+        description: "Use IDA Pro for reverse engineering"
+        skills:
+          - IDA navigation
+          - Cross-references
+          - Graph view
+        flags: 2
+
+      - id: patching
+        name: "Binary Patching"
+        difficulty: medium
+        description: "Patch binaries to modify behavior"
+        skills:
+          - Instruction patching
+          - NOPing
+          - Jump modification
+        flags: 2
+
+  dynamic_analysis:
+    name: "Dynamic Analysis"
+    challenges:
+      - id: gdb-basics
+        name: "GDB Debugging"
+        difficulty: medium
+        description: "Debug Linux binaries with GDB"
+        skills:
+          - Breakpoints
+          - Memory inspection
+          - Register analysis
+        flags: 3
+
+      - id: x64dbg
+        name: "x64dbg Debugging"
+        difficulty: medium
+        description: "Debug Windows binaries"
+        skills:
+          - Windows debugging
+          - API monitoring
+          - Memory analysis
+        flags: 2
+
+      - id: frida
+        name: "Frida Instrumentation"
+        difficulty: hard
+        description: "Dynamic instrumentation with Frida"
+        skills:
+          - Frida scripts
+          - Function hooking
+          - Memory manipulation
+        flags: 3
+
+      - id: strace-ltrace
+        name: "System Call Tracing"
+        difficulty: easy
+        description: "Trace system and library calls"
+        skills:
+          - strace
+          - ltrace
+          - Syscall analysis
+        flags: 2
+
+  crackmes:
+    name: "Crackmes & KeyGens"
+    challenges:
+      - id: crackme-easy
+        name: "Simple Crackme"
+        difficulty: easy
+        description: "Find the password in a simple crackme"
+        skills:
+          - String comparison
+          - Basic RE
+        flags: 1
+
+      - id: crackme-medium
+        name: "Algorithm Crackme"
+        difficulty: medium
+        description: "Reverse engineer validation algorithm"
+        skills:
+          - Algorithm reversal
+          - Key generation
+        flags: 2
+
+      - id: crackme-hard
+        name: "Anti-Debug Crackme"
+        difficulty: hard
+        description: "Bypass anti-debugging techniques"
+        skills:
+          - Anti-debug bypass
+          - Packers
+          - Obfuscation
+        flags: 3
+
+      - id: keygen
+        name: "Write a KeyGen"
+        difficulty: hard
+        description: "Create a key generator for a program"
+        skills:
+          - Algorithm analysis
+          - Code writing
+        flags: 2
+
+  malware_analysis:
+    name: "Malware Analysis"
+    challenges:
+      - id: malware-triage
+        name: "Malware Triage"
+        difficulty: medium
+        description: "Initial malware analysis and classification"
+        skills:
+          - Hash analysis
+          - VirusTotal
+          - Initial indicators
+        flags: 2
+
+      - id: malware-static
+        name: "Static Malware Analysis"
+        difficulty: hard
+        description: "Analyze malware without execution"
+        skills:
+          - Code analysis
+          - IOC extraction
+          - Capabilities identification
+        flags: 4
+
+      - id: malware-dynamic
+        name: "Dynamic Malware Analysis"
+        difficulty: hard
+        description: "Analyze malware in sandbox"
+        skills:
+          - Sandbox usage
+          - Network capture
+          - Behavior analysis
+        flags: 3
+
+      - id: malware-unpack
+        name: "Unpacking Malware"
+        difficulty: expert
+        description: "Unpack protected malware"
+        skills:
+          - Packer identification
+          - Manual unpacking
+          - OEP finding
+        flags: 3
+
+  mobile:
+    name: "Mobile Reverse Engineering"
+    challenges:
+      - id: apk-analysis
+        name: "APK Analysis"
+        difficulty: medium
+        description: "Reverse engineer Android applications"
+        skills:
+          - APKTool
+          - jadx
+          - Smali
+        flags: 3
+
+      - id: ios-analysis
+        name: "iOS App Analysis"
+        difficulty: hard
+        description: "Reverse engineer iOS applications"
+        skills:
+          - IPA extraction
+          - Hopper/IDA
+          - Objective-C/Swift RE
+        flags: 3
+
+      - id: mobile-frida
+        name: "Mobile Frida Hooking"
+        difficulty: hard
+        description: "Hook mobile app functions with Frida"
+        skills:
+          - Frida mobile
+          - SSL pinning bypass
+          - Runtime manipulation
+        flags: 3
+
+templates:
+  re_labs:
+    - name: "Linux RE Lab"
+      services:
+        - ubuntu-re
+      tools:
+        - Ghidra
+        - radare2
+        - GDB-peda
+        - pwntools
+
+    - name: "Windows RE Lab"
+      services:
+        - windows-re
+      tools:
+        - x64dbg
+        - IDA Free
+        - PE-bear
+        - PEStudio
+
+    - name: "Malware Analysis Lab"
+      services:
+        - remnux
+        - flare-vm
+        - inetsim
+      features:
+        - Isolated network
+        - Traffic simulation
+        - Snapshot support
+
+resources:
+  tools:
+    - "Ghidra"
+    - "IDA Pro/Free"
+    - "radare2"
+    - "Binary Ninja"
+    - "x64dbg"
+    - "GDB + pwndbg"
+    - "Frida"
+    - "jadx"
+    - "Detect It Easy"
+
+  references:
+    - "Malware Unicorn Workshops"
+    - "Practical Malware Analysis"
+    - "Reverse Engineering for Beginners"
+    - "crackmes.one"
