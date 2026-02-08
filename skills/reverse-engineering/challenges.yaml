@@ -1,289 +1,650 @@
 # Reverse Engineering Skills and Challenges
-# Domain: Binary Analysis, Malware Analysis, Debugging
+# Based on: SANS FOR610, Practical Malware Analysis, RE for Beginners
+# Reference: https://malwareunicorn.org/
+# Last Updated: 2025
 
 domain: reverse-engineering
-description: "Binary reverse engineering and malware analysis"
+version: "2.0"
+description: "Binary analysis, malware analysis, and reverse engineering"
+
+# Analysis Methodology
+methodology:
+  phases:
+    - name: "Triage"
+      description: "Quick initial assessment"
+      tools: ["file", "strings", "DIE", "PEStudio"]
+    - name: "Static Analysis"
+      description: "Analysis without execution"
+      tools: ["Ghidra", "IDA", "radare2", "Binary Ninja"]
+    - name: "Dynamic Analysis"
+      description: "Behavioral analysis during execution"
+      tools: ["x64dbg", "GDB", "Procmon", "Wireshark"]
+    - name: "Advanced Analysis"
+      description: "Deep dive and unpacking"
+      tools: ["Ghidra scripting", "Frida", "unicorn"]
 
 categories:
-  binary_basics:
-    name: "Binary Fundamentals"
-    challenges:
-      - id: elf-basics
-        name: "ELF Binary Basics"
-        difficulty: easy
-        description: "Understand ELF binary structure"
-        skills:
-          - ELF format
-          - File headers
-          - Sections and segments
-        flags: 2
 
-      - id: pe-basics
-        name: "PE Binary Basics"
+  # Binary Fundamentals
+  binary_fundamentals:
+    name: "Binary Fundamentals"
+    description: "Understanding executable file formats"
+    challenges:
+      - id: elf-structure
+        name: "ELF Binary Analysis"
         difficulty: easy
-        description: "Understand Windows PE format"
+        points: 100
+        description: "Understand Linux ELF file format"
         skills:
-          - PE format
-          - Import/Export tables
-          - Sections
+          - ELF header analysis
+          - Section vs segments
+          - Symbol tables
+          - Dynamic linking
         flags: 2
+        commands:
+          - "readelf -h binary"
+          - "readelf -S binary"
+          - "objdump -d binary"
+        learning:
+          - ELF magic bytes
+          - Entry point location
+          - .text, .data, .bss sections
+
+      - id: pe-structure
+        name: "PE Binary Analysis"
+        difficulty: easy
+        points: 100
+        description: "Understand Windows PE file format"
+        skills:
+          - DOS/PE headers
+          - Import/Export tables
+          - Sections (.text, .data, .rdata)
+          - Resources
+        flags: 2
+        tools:
+          - PEStudio
+          - PE-bear
+          - pestudio
+        learning:
+          - MZ/PE signatures
+          - IMAGE_NT_HEADERS
+          - Import Address Table (IAT)
 
       - id: strings-analysis
-        name: "String Analysis"
+        name: "String Extraction & Analysis"
         difficulty: easy
-        description: "Extract information from binary strings"
+        points: 100
+        description: "Extract and analyze strings in binaries"
         skills:
-          - strings command
-          - Encoding detection
-          - Obfuscation identification
-        flags: 2
+          - ASCII/Unicode strings
+          - Encoded strings
+          - URL/IP extraction
+          - API name patterns
+        flags: 1
+        commands:
+          - "strings -a binary"
+          - "strings -el binary"  # Little-endian Unicode
+          - "FLOSS binary"  # FLARE obfuscated strings
 
+      - id: file-identification
+        name: "File Type Identification"
+        difficulty: easy
+        points: 100
+        description: "Identify file types and packers"
+        skills:
+          - Magic bytes
+          - Packer detection
+          - Compiler identification
+        flags: 1
+        tools:
+          - Detect It Easy (DIE)
+          - ExeInfoPE
+          - TrID
+
+  # Static Analysis
   static_analysis:
     name: "Static Analysis"
+    description: "Analysis without execution"
     challenges:
-      - id: disassembly
-        name: "Disassembly Reading"
+      - id: x86-assembly
+        name: "x86/x64 Assembly Reading"
         difficulty: medium
-        description: "Read and understand x86/x64 assembly"
+        points: 250
+        description: "Read and understand x86 assembly"
         skills:
-          - x86 instructions
-          - Function identification
-          - Control flow
+          - Registers (EAX, EBX, etc.)
+          - Common instructions
+          - Calling conventions
+          - Stack frames
         flags: 3
+        topics:
+          - MOV, PUSH, POP, CALL, RET
+          - JMP, JE, JNE conditionals
+          - Function prologue/epilogue
+          - cdecl vs stdcall vs fastcall
+
+      - id: arm-assembly
+        name: "ARM Assembly Basics"
+        difficulty: medium
+        points: 250
+        description: "Understand ARM architecture"
+        skills:
+          - ARM vs Thumb mode
+          - Register usage (R0-R15)
+          - ARM calling convention
+          - Common instructions
+        flags: 2
+        topics:
+          - LDR, STR, MOV, B, BL
+          - Conditional execution
+          - AAPCS calling convention
 
       - id: ghidra-basics
         name: "Ghidra Fundamentals"
         difficulty: medium
-        description: "Use Ghidra for binary analysis"
+        points: 250
+        description: "Master Ghidra for reverse engineering"
         skills:
-          - Ghidra navigation
-          - Decompilation
-          - Function analysis
+          - Project setup
+          - Auto-analysis
+          - Decompiler usage
+          - Cross-references
+          - Function renaming
         flags: 3
+        features:
+          - Listing view
+          - Decompile window
+          - Function graph
+          - Data type manager
+          - Scripting (Python/Java)
 
       - id: ida-basics
-        name: "IDA Pro Basics"
+        name: "IDA Pro Fundamentals"
         difficulty: medium
-        description: "Use IDA Pro for reverse engineering"
+        points: 250
+        description: "Use IDA Pro for analysis"
         skills:
-          - IDA navigation
+          - Navigation
           - Cross-references
           - Graph view
+          - IDAPython basics
         flags: 2
+        shortcuts:
+          - "G: Go to address"
+          - "X: Cross-references"
+          - "N: Rename"
+          - "Space: Text/Graph view"
 
-      - id: patching
-        name: "Binary Patching"
+      - id: function-identification
+        name: "Function Identification"
         difficulty: medium
-        description: "Patch binaries to modify behavior"
+        points: 250
+        description: "Identify key functions in binaries"
         skills:
-          - Instruction patching
-          - NOPing
-          - Jump modification
+          - main() location
+          - Library function identification
+          - Custom function analysis
+          - FLIRT signatures
         flags: 2
 
+      - id: control-flow
+        name: "Control Flow Analysis"
+        difficulty: medium
+        points: 250
+        description: "Analyze program control flow"
+        skills:
+          - Basic blocks
+          - Conditional branches
+          - Loop identification
+          - Switch statements
+        flags: 2
+
+  # Dynamic Analysis
   dynamic_analysis:
     name: "Dynamic Analysis"
+    description: "Runtime analysis and debugging"
     challenges:
-      - id: gdb-basics
+      - id: gdb-debugging
         name: "GDB Debugging"
         difficulty: medium
+        points: 250
         description: "Debug Linux binaries with GDB"
         skills:
           - Breakpoints
           - Memory inspection
           - Register analysis
+          - Stack examination
         flags: 3
+        commands:
+          - "b *0x401234"
+          - "x/20x $esp"
+          - "info registers"
+          - "disas main"
+        extensions:
+          - pwndbg
+          - GEF
+          - peda
 
-      - id: x64dbg
+      - id: x64dbg-debugging
         name: "x64dbg Debugging"
         difficulty: medium
+        points: 250
         description: "Debug Windows binaries"
         skills:
-          - Windows debugging
+          - Breakpoint types
+          - Memory dumps
           - API monitoring
-          - Memory analysis
+          - Patching
         flags: 2
+        features:
+          - Hardware breakpoints
+          - Memory map
+          - Call stack
+          - Conditional breakpoints
 
-      - id: frida
-        name: "Frida Instrumentation"
-        difficulty: hard
-        description: "Dynamic instrumentation with Frida"
+      - id: api-monitoring
+        name: "API Call Monitoring"
+        difficulty: medium
+        points: 250
+        description: "Monitor system/library calls"
         skills:
-          - Frida scripts
-          - Function hooking
-          - Memory manipulation
-        flags: 3
-
-      - id: strace-ltrace
-        name: "System Call Tracing"
-        difficulty: easy
-        description: "Trace system and library calls"
-        skills:
+          - strace/ltrace (Linux)
+          - API Monitor (Windows)
+          - Procmon
+          - x64dbg logging
+        flags: 2
+        tools:
           - strace
           - ltrace
-          - Syscall analysis
-        flags: 2
+          - API Monitor
+          - Process Monitor
 
+      - id: frida-hooking
+        name: "Frida Dynamic Instrumentation"
+        difficulty: hard
+        points: 500
+        description: "Hook and modify running programs"
+        skills:
+          - Frida scripting
+          - Function hooking
+          - Argument modification
+          - Return value manipulation
+        flags: 3
+        examples:
+          - "Interceptor.attach()"
+          - "Module.findExportByName()"
+          - "Memory.readUtf8String()"
+
+      - id: network-analysis
+        name: "Network Behavior Analysis"
+        difficulty: medium
+        points: 250
+        description: "Analyze network communications"
+        skills:
+          - Packet capture
+          - C2 identification
+          - Protocol analysis
+          - Traffic decryption
+        flags: 2
+        tools:
+          - Wireshark
+          - FakeNet-NG
+          - INetSim
+          - mitmproxy
+
+  # Crackmes & CTF
   crackmes:
-    name: "Crackmes & KeyGens"
+    name: "Crackmes & Challenges"
+    description: "Practice reverse engineering skills"
     challenges:
       - id: crackme-easy
-        name: "Simple Crackme"
+        name: "Basic Crackme"
         difficulty: easy
-        description: "Find the password in a simple crackme"
+        points: 100
+        description: "Find password in simple binary"
         skills:
           - String comparison
-          - Basic RE
+          - strcmp/memcmp patterns
+          - Static password extraction
         flags: 1
+        patterns:
+          - "cmp instruction patterns"
+          - "Direct string compare"
 
-      - id: crackme-medium
+      - id: crackme-algorithm
         name: "Algorithm Crackme"
         difficulty: medium
-        description: "Reverse engineer validation algorithm"
-        skills:
-          - Algorithm reversal
-          - Key generation
-        flags: 2
-
-      - id: crackme-hard
-        name: "Anti-Debug Crackme"
-        difficulty: hard
-        description: "Bypass anti-debugging techniques"
-        skills:
-          - Anti-debug bypass
-          - Packers
-          - Obfuscation
-        flags: 3
-
-      - id: keygen
-        name: "Write a KeyGen"
-        difficulty: hard
-        description: "Create a key generator for a program"
+        points: 250
+        description: "Reverse validation algorithm"
         skills:
           - Algorithm analysis
-          - Code writing
+          - Mathematical operations
+          - Key generation
+        flags: 2
+        common_algos:
+          - XOR encoding
+          - Simple checksums
+          - Character transformations
+
+      - id: crackme-antidebug
+        name: "Anti-Debug Bypass"
+        difficulty: hard
+        points: 500
+        description: "Bypass anti-debugging techniques"
+        skills:
+          - IsDebuggerPresent
+          - PEB.BeingDebugged
+          - Timing checks
+          - Hardware breakpoint detection
+        flags: 3
+        techniques:
+          - Windows: IsDebuggerPresent, CheckRemoteDebuggerPresent
+          - Linux: ptrace self-check, /proc/self/status
+
+      - id: keygen
+        name: "Write a Keygen"
+        difficulty: hard
+        points: 500
+        description: "Create key generator for software"
+        skills:
+          - Algorithm reversal
+          - Constraint solving
+          - Key validation logic
         flags: 2
 
+      - id: unpack-upx
+        name: "UPX Unpacking"
+        difficulty: easy
+        points: 100
+        description: "Unpack UPX-compressed binary"
+        skills:
+          - UPX detection
+          - Manual unpacking
+          - Automatic unpacking
+        flags: 1
+        commands:
+          - "upx -d packed_binary"
+
+      - id: unpack-manual
+        name: "Manual Unpacking"
+        difficulty: hard
+        points: 500
+        description: "Manually unpack protected binary"
+        skills:
+          - OEP finding
+          - Dump and fix IAT
+          - Virtualization bypass
+        flags: 3
+        techniques:
+          - Breakpoint on VirtualProtect
+          - Find original entry point
+          - Scylla dump/fix
+
+  # Malware Analysis
   malware_analysis:
     name: "Malware Analysis"
+    description: "Analysis of malicious software"
+    safety_note: "Always analyze malware in isolated environments!"
+
     challenges:
       - id: malware-triage
         name: "Malware Triage"
         difficulty: medium
-        description: "Initial malware analysis and classification"
+        points: 250
+        description: "Quick initial malware assessment"
         skills:
           - Hash analysis
-          - VirusTotal
-          - Initial indicators
+          - VirusTotal lookup
+          - Sandbox detonation
+          - Initial IOC extraction
         flags: 2
+        checklist:
+          - "Calculate hashes (MD5, SHA256)"
+          - "Check VirusTotal"
+          - "Identify packer/compiler"
+          - "Extract strings"
+
+      - id: malware-behavior
+        name: "Behavioral Analysis"
+        difficulty: medium
+        points: 250
+        description: "Analyze malware behavior in sandbox"
+        skills:
+          - Sandbox usage
+          - File system changes
+          - Registry modifications
+          - Network connections
+        flags: 3
+        tools:
+          - Cuckoo Sandbox
+          - ANY.RUN
+          - Joe Sandbox
+          - CAPE
 
       - id: malware-static
         name: "Static Malware Analysis"
         difficulty: hard
-        description: "Analyze malware without execution"
+        points: 500
+        description: "Deep static analysis of malware"
         skills:
-          - Code analysis
-          - IOC extraction
-          - Capabilities identification
+          - Code flow analysis
+          - API sequence analysis
+          - String decryption
+          - Configuration extraction
         flags: 4
 
-      - id: malware-dynamic
-        name: "Dynamic Malware Analysis"
+      - id: malware-c2
+        name: "C2 Protocol Analysis"
         difficulty: hard
-        description: "Analyze malware in sandbox"
+        points: 500
+        description: "Analyze command and control communications"
         skills:
-          - Sandbox usage
-          - Network capture
-          - Behavior analysis
+          - Protocol reverse engineering
+          - Encryption analysis
+          - Beacon identification
+          - Command extraction
         flags: 3
 
-      - id: malware-unpack
-        name: "Unpacking Malware"
+      - id: ransomware-analysis
+        name: "Ransomware Analysis"
+        difficulty: hard
+        points: 500
+        description: "Analyze ransomware sample"
+        skills:
+          - Encryption algorithm identification
+          - Key extraction attempts
+          - IOC extraction
+          - Decryptor development
+        flags: 3
+
+      - id: rootkit-detection
+        name: "Rootkit Analysis"
         difficulty: expert
-        description: "Unpack protected malware"
+        points: 1000
+        description: "Detect and analyze rootkits"
         skills:
-          - Packer identification
-          - Manual unpacking
-          - OEP finding
-        flags: 3
+          - Kernel analysis
+          - Hook detection
+          - Hidden process detection
+          - DKOM identification
+        flags: 2
 
+  # Mobile Reverse Engineering
   mobile:
     name: "Mobile Reverse Engineering"
+    description: "Android and iOS application analysis"
+
     challenges:
       - id: apk-analysis
-        name: "APK Analysis"
+        name: "Android APK Analysis"
         difficulty: medium
+        points: 250
         description: "Reverse engineer Android applications"
         skills:
-          - APKTool
-          - jadx
-          - Smali
+          - APK extraction
+          - DEX to Java decompilation
+          - Smali analysis
+          - Native library analysis
         flags: 3
+        tools:
+          - apktool
+          - jadx
+          - dex2jar
+          - Ghidra
+
+      - id: android-frida
+        name: "Android Frida Hooking"
+        difficulty: hard
+        points: 500
+        description: "Hook Android app functions"
+        skills:
+          - Frida server setup
+          - Java method hooking
+          - Native library hooking
+          - SSL pinning bypass
+        flags: 3
+        examples:
+          - "Java.use('class').method.implementation"
 
       - id: ios-analysis
         name: "iOS App Analysis"
         difficulty: hard
+        points: 500
         description: "Reverse engineer iOS applications"
         skills:
           - IPA extraction
-          - Hopper/IDA
+          - Mach-O analysis
           - Objective-C/Swift RE
+          - Class-dump usage
         flags: 3
+        tools:
+          - Hopper
+          - class-dump
+          - Frida
+          - objection
 
-      - id: mobile-frida
-        name: "Mobile Frida Hooking"
-        difficulty: hard
-        description: "Hook mobile app functions with Frida"
+      - id: ssl-pinning-bypass
+        name: "SSL Pinning Bypass"
+        difficulty: medium
+        points: 250
+        description: "Bypass certificate pinning"
         skills:
-          - Frida mobile
-          - SSL pinning bypass
-          - Runtime manipulation
-        flags: 3
+          - Pinning detection
+          - Frida scripts
+          - Objection automation
+        flags: 2
+        tools:
+          - objection
+          - Frida
+          - SSL Kill Switch
 
-templates:
-  re_labs:
-    - name: "Linux RE Lab"
-      services:
-        - ubuntu-re
-      tools:
-        - Ghidra
-        - radare2
-        - GDB-peda
-        - pwntools
+# Lab Environment
+docker_templates:
+  remnux:
+    name: "REMnux Distribution"
+    image: "remnux/remnux-distro:focal"
+    description: "Linux toolkit for malware analysis"
+    tools:
+      - Ghidra
+      - radare2
+      - YARA
+      - CyberChef
+      - Volatility
 
-    - name: "Windows RE Lab"
-      services:
-        - windows-re
-      tools:
-        - x64dbg
-        - IDA Free
-        - PE-bear
-        - PEStudio
+  flare_vm:
+    name: "FLARE-VM (Windows)"
+    description: "Windows malware analysis VM"
+    note: "Requires manual setup on Windows"
+    tools:
+      - IDA Free
+      - x64dbg
+      - PE-bear
+      - PEStudio
+      - Fakenet-NG
 
-    - name: "Malware Analysis Lab"
-      services:
-        - remnux
-        - flare-vm
-        - inetsim
-      features:
-        - Isolated network
-        - Traffic simulation
-        - Snapshot support
+  mobile_lab:
+    name: "Mobile RE Lab"
+    services:
+      - android-emulator
+      - frida-server
+    tools:
+      - jadx
+      - apktool
+      - objection
 
+# Tools Reference
+tools:
+  disassemblers:
+    - name: "Ghidra"
+      url: "https://ghidra-sre.org/"
+      description: "NSA open-source reverse engineering"
+      free: true
+    - name: "IDA Pro"
+      url: "https://hex-rays.com/ida-pro/"
+      description: "Industry standard disassembler"
+      free: false
+    - name: "Binary Ninja"
+      url: "https://binary.ninja/"
+      description: "Modern reversing platform"
+      free: false
+    - name: "radare2"
+      url: "https://rada.re/"
+      description: "Open-source reversing framework"
+      free: true
+    - name: "Cutter"
+      url: "https://cutter.re/"
+      description: "GUI for radare2"
+      free: true
+
+  debuggers:
+    - name: "x64dbg"
+      url: "https://x64dbg.com/"
+      platform: "Windows"
+    - name: "GDB"
+      url: "https://www.gnu.org/software/gdb/"
+      platform: "Linux"
+    - name: "WinDbg"
+      url: "https://docs.microsoft.com/windows-hardware/drivers/debugger/"
+      platform: "Windows"
+    - name: "lldb"
+      url: "https://lldb.llvm.org/"
+      platform: "macOS/Linux"
+
+  dynamic:
+    - name: "Frida"
+      url: "https://frida.re/"
+      description: "Dynamic instrumentation toolkit"
+    - name: "Process Monitor"
+      url: "https://docs.microsoft.com/sysinternals/downloads/procmon"
+      platform: "Windows"
+
+# Learning Resources
 resources:
-  tools:
-    - "Ghidra"
-    - "IDA Pro/Free"
-    - "radare2"
-    - "Binary Ninja"
-    - "x64dbg"
-    - "GDB + pwndbg"
-    - "Frida"
-    - "jadx"
-    - "Detect It Easy"
+  books:
+    - name: "Practical Malware Analysis"
+      author: "Sikorski & Honig"
+    - name: "Reverse Engineering for Beginners"
+      author: "Dennis Yurichev"
+      url: "https://beginners.re/"
+      free: true
+    - name: "The IDA Pro Book"
+      author: "Chris Eagle"
+
+  training:
+    - name: "Malware Unicorn Workshops"
+      url: "https://malwareunicorn.org/#/workshops"
+      free: true
+    - name: "crackmes.one"
+      url: "https://crackmes.one/"
+      free: true
+    - name: "Nightmare RE Course"
+      url: "https://guyinatuxedo.github.io/"
+      free: true
+    - name: "SANS FOR610"
+      url: "https://www.sans.org/cyber-security-courses/reverse-engineering-malware-malware-analysis-tools-techniques/"
 
   references:
-    - "Malware Unicorn Workshops"
-    - "Practical Malware Analysis"
-    - "Reverse Engineering for Beginners"
-    - "crackmes.one"
+    - name: "x86 Assembly Guide"
+      url: "https://www.cs.virginia.edu/~evans/cs216/guides/x86.html"
+    - name: "Intel Manuals"
+      url: "https://www.intel.com/sdm"

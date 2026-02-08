@@ -1,0 +1,207 @@
+# Security Lab Factory - Lab Catalog
+# This file lists all available labs for the store
+
+version: "1.0"
+updated: "2025-02-08"
+
+# Lab Categories
+categories:
+  - id: web-security
+    name: "Web Security"
+    description: "Web application security labs"
+    icon: "globe"
+
+  - id: network
+    name: "Network Security"
+    description: "Network penetration testing labs"
+    icon: "network"
+
+  - id: cloud
+    name: "Cloud Security"
+    description: "AWS, Azure, GCP security labs"
+    icon: "cloud"
+
+  - id: ctf
+    name: "CTF Challenges"
+    description: "Capture The Flag competitions"
+    icon: "flag"
+
+  - id: forensics
+    name: "Digital Forensics"
+    description: "DFIR and investigation labs"
+    icon: "search"
+
+  - id: devops
+    name: "DevSecOps"
+    description: "CI/CD and pipeline security"
+    icon: "cog"
+
+# Featured Labs
+featured:
+  - sqli-masterclass
+  - active-directory-attack-path
+  - aws-privilege-escalation
+
+# Lab Listings
+labs:
+  # Free Labs
+  - id: web-security-basics
+    name: "Web Security Basics"
+    category: web-security
+    description: "Introduction to OWASP Top 10 vulnerabilities"
+    difficulty: easy
+    duration: "2-3 hours"
+    price: 0
+    license: MIT
+    flags: 10
+    skills:
+      - SQL Injection
+      - XSS
+      - CSRF
+    requirements:
+      - Docker
+      - 4GB RAM
+    preview_image: "/images/web-basics.png"
+    download_url: "https://github.com/example/labs/web-security-basics"
+
+  - id: network-pentest-101
+    name: "Network Pentest 101"
+    category: network
+    description: "Learn network penetration testing fundamentals"
+    difficulty: easy
+    duration: "3-4 hours"
+    price: 0
+    license: MIT
+    flags: 8
+    skills:
+      - Nmap
+      - SMB Enumeration
+      - Password Attacks
+
+  # Premium Labs
+  - id: sqli-masterclass
+    name: "SQL Injection Masterclass"
+    category: web-security
+    description: "Complete SQL injection training from basic to advanced"
+    difficulty: medium
+    duration: "8-10 hours"
+    price: 29
+    license: Commercial
+    flags: 25
+    skills:
+      - Union-based SQLi
+      - Blind SQLi
+      - Time-based SQLi
+      - Out-of-band SQLi
+      - WAF Bypass
+    preview_image: "/images/sqli-masterclass.png"
+    purchase_url: "https://gumroad.com/l/sqli-masterclass"
+
+  - id: active-directory-attack-path
+    name: "Active Directory Attack Path"
+    category: network
+    description: "Complete AD attack chain from initial access to domain admin"
+    difficulty: hard
+    duration: "15-20 hours"
+    price: 49
+    license: Commercial
+    flags: 30
+    skills:
+      - AD Enumeration
+      - Kerberoasting
+      - Pass the Hash
+      - DCSync
+      - Golden Ticket
+    requirements:
+      - Docker (or Windows VMs)
+      - 16GB RAM
+      - 50GB disk
+
+  - id: aws-privilege-escalation
+    name: "AWS Privilege Escalation"
+    category: cloud
+    description: "Master IAM privilege escalation techniques"
+    difficulty: hard
+    duration: "10-12 hours"
+    price: 39
+    license: Commercial
+    flags: 15
+    skills:
+      - IAM Enumeration
+      - Policy Analysis
+      - Role Chaining
+      - Lambda Exploitation
+
+  - id: ransomware-ir-simulation
+    name: "Ransomware IR Simulation"
+    category: forensics
+    description: "Respond to a realistic ransomware incident"
+    difficulty: hard
+    duration: "12-15 hours"
+    price: 59
+    license: Commercial
+    flags: 20
+    skills:
+      - Memory Forensics
+      - Timeline Analysis
+      - IOC Extraction
+      - Incident Documentation
+
+# Bundles
+bundles:
+  - id: web-security-complete
+    name: "Web Security Complete Bundle"
+    description: "All web security labs at 40% discount"
+    labs:
+      - web-security-basics
+      - sqli-masterclass
+      - xss-advanced
+      - ssrf-exploitation
+    regular_price: 97
+    bundle_price: 59
+
+  - id: enterprise-bundle
+    name: "Enterprise Security Bundle"
+    description: "Complete enterprise security training"
+    labs:
+      - active-directory-attack-path
+      - aws-privilege-escalation
+      - ransomware-ir-simulation
+    regular_price: 147
+    bundle_price: 99
+
+# Subscription Plans
+subscriptions:
+  - id: monthly
+    name: "Monthly Access"
+    price: 19
+    period: monthly
+    features:
+      - Access to all labs
+      - New labs monthly
+      - Discord community
+      - Email support
+
+  - id: yearly
+    name: "Yearly Access"
+    price: 149
+    period: yearly
+    features:
+      - Access to all labs
+      - New labs monthly
+      - Discord community
+      - Priority support
+      - Exclusive content
+      - 2 months free
+
+  - id: enterprise
+    name: "Enterprise"
+    price: 999
+    period: yearly
+    features:
+      - Unlimited team access
+      - Custom lab creation
+      - Private deployment
+      - Dedicated support
+      - Training sessions
+      - Compliance reports

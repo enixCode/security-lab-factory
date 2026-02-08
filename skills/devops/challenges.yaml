@@ -1,290 +1,646 @@
-# DevOps Security Skills and Challenges
-# Domain: CI/CD, Container Security, Infrastructure as Code
+# DevSecOps Skills and Challenges
+# Based on: OWASP DevSecOps, NIST SSDF, CIS Benchmarks
+# Reference: https://owasp.org/www-project-devsecops-guideline/
+# Last Updated: 2025
 
 domain: devops
-description: "DevSecOps, CI/CD security, and infrastructure automation"
+version: "2.0"
+description: "DevSecOps, CI/CD security, and secure software development"
+
+# DevSecOps Principles
+principles:
+  shift_left: "Integrate security early in SDLC"
+  automation: "Automate security testing in pipelines"
+  continuous: "Continuous security validation"
+  collaboration: "Security as shared responsibility"
+
+# Testing Categories
+testing_types:
+  SAST:
+    name: "Static Application Security Testing"
+    description: "White-box testing of source code"
+    when: "Every commit/PR"
+  DAST:
+    name: "Dynamic Application Security Testing"
+    description: "Black-box testing of running application"
+    when: "Staging/pre-production"
+  SCA:
+    name: "Software Composition Analysis"
+    description: "Dependency vulnerability scanning"
+    when: "Every build"
+  IAST:
+    name: "Interactive Application Security Testing"
+    description: "Runtime analysis during testing"
+    when: "QA/testing phase"
 
 categories:
-  container_security:
-    name: "Container Security"
-    challenges:
-      - id: docker-basics
-        name: "Docker Security Basics"
-        difficulty: easy
-        description: "Understand Docker security fundamentals"
-        skills:
-          - Docker daemon
-          - Image security
-          - Container isolation
-        flags: 2
 
-      - id: docker-escape
-        name: "Container Escape"
-        difficulty: hard
-        description: "Escape from Docker containers"
-        skills:
-          - Privileged containers
-          - Capabilities abuse
-          - Socket mounting
-        flags: 3
-
-      - id: image-security
-        name: "Image Vulnerability Scanning"
-        difficulty: medium
-        description: "Scan and secure container images"
-        skills:
-          - Trivy
-          - Grype
-          - Base image selection
-        flags: 2
-
-      - id: docker-hardening
-        name: "Docker Hardening"
-        difficulty: medium
-        description: "Implement Docker security best practices"
-        skills:
-          - Seccomp profiles
-          - AppArmor
-          - Read-only containers
-        flags: 3
-
+  # CI/CD Pipeline Security
   cicd_security:
     name: "CI/CD Pipeline Security"
+    description: "Secure pipeline configuration and hardening"
     challenges:
-      - id: secrets-leak
-        name: "Pipeline Secrets Exposure"
+      - id: pipeline-secrets
+        name: "Pipeline Secret Management"
         difficulty: easy
-        description: "Find and fix secret leaks in CI/CD"
+        points: 100
+        description: "Properly manage secrets in CI/CD"
         skills:
-          - Secret scanning
-          - Git history
-          - Environment variables
+          - Secret storage
+          - Secret rotation
+          - Environment isolation
+          - Vault integration
         flags: 2
+        bad_practices:
+          - "Hardcoded secrets in code"
+          - "Secrets in environment variables"
+          - "Secrets in logs"
+        good_practices:
+          - "Use secret managers (Vault, AWS Secrets Manager)"
+          - "Rotate secrets regularly"
+          - "Mask secrets in logs"
 
       - id: pipeline-injection
-        name: "Pipeline Injection"
+        name: "Pipeline Injection Prevention"
         difficulty: medium
-        description: "Exploit CI/CD pipeline injection flaws"
+        points: 250
+        description: "Prevent command/script injection in pipelines"
         skills:
-          - Command injection
+          - Input validation
           - Script injection
           - YAML injection
+          - Environment variable injection
         flags: 3
+        attack_vectors:
+          - "PR title/body injection"
+          - "Branch name injection"
+          - "Commit message injection"
+        mitigations:
+          - "Use actions/script carefully"
+          - "Validate inputs"
+          - "Use intermediate variables"
 
-      - id: supply-chain
-        name: "Supply Chain Attacks"
-        difficulty: hard
-        description: "Understand and prevent supply chain attacks"
+      - id: runner-security
+        name: "CI Runner Security"
+        difficulty: medium
+        points: 250
+        description: "Secure CI/CD runner configuration"
         skills:
-          - Dependency confusion
-          - Typosquatting
-          - SBOM
+          - Self-hosted runner hardening
+          - Ephemeral runners
+          - Network isolation
+          - Least privilege
         flags: 2
+        considerations:
+          - "Isolated networks"
+          - "No persistent state"
+          - "Limited permissions"
+          - "Regular updates"
 
       - id: artifact-security
         name: "Build Artifact Security"
         difficulty: medium
+        points: 250
         description: "Secure build artifacts and registries"
         skills:
-          - Signing
-          - Verification
+          - Artifact signing
           - Registry security
+          - Provenance attestation
+          - SBOM generation
         flags: 2
+        tools:
+          - cosign
+          - Notary
+          - in-toto
+          - SLSA
 
-  infrastructure_as_code:
-    name: "Infrastructure as Code Security"
+      - id: supply-chain
+        name: "Supply Chain Security"
+        difficulty: hard
+        points: 500
+        description: "Secure software supply chain"
+        skills:
+          - Dependency verification
+          - SLSA compliance
+          - Provenance
+          - Reproducible builds
+        flags: 3
+        frameworks:
+          - "SLSA (Supply-chain Levels for Software Artifacts)"
+          - "SSDF (Secure Software Development Framework)"
+
+  # SAST - Static Analysis
+  sast:
+    name: "Static Application Security Testing"
+    description: "Source code security analysis"
     challenges:
-      - id: terraform-scan
-        name: "Terraform Security Scanning"
+      - id: sast-integration
+        name: "SAST Pipeline Integration"
         difficulty: easy
-        description: "Scan Terraform for misconfigurations"
+        points: 100
+        description: "Integrate SAST tools in CI/CD"
         skills:
-          - tfsec
-          - checkov
-          - Best practices
+          - Tool configuration
+          - Rule customization
+          - False positive management
+          - Developer feedback
         flags: 2
+        tools:
+          - SonarQube
+          - Semgrep
+          - CodeQL
+          - Checkmarx
+          - Snyk Code
 
-      - id: ansible-security
-        name: "Ansible Security"
+      - id: custom-rules
+        name: "Custom SAST Rules"
         difficulty: medium
-        description: "Secure Ansible playbooks and vault"
+        points: 250
+        description: "Write custom security rules"
         skills:
-          - Ansible vault
-          - Secure playbooks
-          - Privilege escalation
+          - Semgrep rules
+          - CodeQL queries
+          - Pattern matching
+          - Taint analysis
         flags: 2
+        examples:
+          - "Detect hardcoded secrets"
+          - "Find SQL injection patterns"
+          - "Identify insecure functions"
 
-      - id: helm-security
-        name: "Helm Chart Security"
+      - id: sast-triage
+        name: "SAST Finding Triage"
         difficulty: medium
-        description: "Audit and secure Helm charts"
+        points: 250
+        description: "Efficiently triage SAST results"
         skills:
-          - Template injection
-          - RBAC templates
-          - Secure values
+          - Severity assessment
+          - False positive identification
+          - Prioritization
+          - Remediation guidance
         flags: 2
 
-  gitops:
-    name: "GitOps Security"
+  # DAST - Dynamic Analysis
+  dast:
+    name: "Dynamic Application Security Testing"
+    description: "Runtime security testing"
     challenges:
-      - id: git-secrets
-        name: "Git Secret Scanning"
-        difficulty: easy
-        description: "Find secrets in Git repositories"
+      - id: dast-integration
+        name: "DAST Pipeline Integration"
+        difficulty: medium
+        points: 250
+        description: "Integrate DAST in CI/CD pipeline"
         skills:
-          - truffleHog
-          - git-secrets
-          - gitleaks
+          - Scanner configuration
+          - Authentication handling
+          - Scope management
+          - Result analysis
+        flags: 2
+        tools:
+          - OWASP ZAP
+          - Nuclei
+          - Nikto
+          - Burp Suite Enterprise
+          - StackHawk
+
+      - id: api-security-testing
+        name: "API Security Testing"
+        difficulty: medium
+        points: 250
+        description: "Test API security automatically"
+        skills:
+          - OpenAPI scanning
+          - Authentication testing
+          - BOLA/IDOR detection
+          - Rate limiting tests
+        flags: 3
+        tools:
+          - OWASP ZAP API scan
+          - Postman security tests
+          - dredd
+          - schemathesis
+
+      - id: authenticated-scanning
+        name: "Authenticated DAST Scanning"
+        difficulty: medium
+        points: 250
+        description: "Configure authenticated scans"
+        skills:
+          - Session handling
+          - Token management
+          - Multi-step authentication
+          - Session validation
         flags: 2
 
-      - id: git-hooks
-        name: "Pre-commit Security Hooks"
+  # SCA - Dependency Scanning
+  sca:
+    name: "Software Composition Analysis"
+    description: "Dependency vulnerability management"
+    challenges:
+      - id: sca-integration
+        name: "SCA Pipeline Integration"
         difficulty: easy
-        description: "Implement security pre-commit hooks"
+        points: 100
+        description: "Integrate dependency scanning"
         skills:
-          - pre-commit framework
-          - Hook configuration
-          - Automation
+          - Tool configuration
+          - Policy definition
+          - Break builds on critical
+          - License compliance
+        flags: 2
+        tools:
+          - Snyk
+          - Dependabot
+          - OWASP Dependency-Check
+          - Trivy
+          - Grype
+
+      - id: sbom-generation
+        name: "SBOM Generation & Management"
+        difficulty: medium
+        points: 250
+        description: "Create and manage SBOMs"
+        skills:
+          - SPDX format
+          - CycloneDX format
+          - SBOM automation
+          - Vulnerability mapping
+        flags: 2
+        tools:
+          - syft
+          - cdxgen
+          - spdx-sbom-generator
+        formats:
+          - SPDX
+          - CycloneDX
+
+      - id: transitive-deps
+        name: "Transitive Dependency Analysis"
+        difficulty: medium
+        points: 250
+        description: "Analyze transitive dependencies"
+        skills:
+          - Dependency trees
+          - Hidden vulnerabilities
+          - Update impact
+          - Lock file analysis
+        flags: 2
+
+      - id: license-compliance
+        name: "License Compliance"
+        difficulty: easy
+        points: 100
+        description: "Ensure license compliance"
+        skills:
+          - License detection
+          - Policy enforcement
+          - SPDX licenses
+          - Copyleft identification
         flags: 1
 
-      - id: branch-protection
-        name: "Git Branch Protection"
-        difficulty: medium
-        description: "Configure secure branch policies"
-        skills:
-          - Branch protection rules
-          - Required reviews
-          - Status checks
-        flags: 2
-
-  monitoring_security:
-    name: "Security Monitoring"
+  # Container Security
+  container_security:
+    name: "Container Security"
+    description: "Docker and container security"
     challenges:
-      - id: log-aggregation
-        name: "Centralized Logging"
-        difficulty: medium
-        description: "Set up secure log aggregation"
+      - id: image-scanning
+        name: "Container Image Scanning"
+        difficulty: easy
+        points: 100
+        description: "Scan container images for vulnerabilities"
         skills:
-          - ELK Stack
-          - Fluentd
-          - Log security
+          - Image vulnerability scanning
+          - Base image selection
+          - Layer analysis
+          - Registry scanning
         flags: 2
+        tools:
+          - Trivy
+          - Grype
+          - Clair
+          - Snyk Container
 
-      - id: security-alerts
-        name: "Security Alerting"
+      - id: dockerfile-security
+        name: "Dockerfile Security"
         difficulty: medium
-        description: "Configure security alerts and dashboards"
+        points: 250
+        description: "Secure Dockerfile practices"
         skills:
-          - Alert rules
-          - Grafana dashboards
-          - Incident triggers
+          - Multi-stage builds
+          - Non-root users
+          - Minimal base images
+          - Secret handling
         flags: 3
+        best_practices:
+          - "Use specific image tags"
+          - "Run as non-root"
+          - "Use multi-stage builds"
+          - "Minimize layers"
+          - "No secrets in images"
+        tools:
+          - hadolint
+          - dockle
 
-      - id: audit-logging
-        name: "Audit Logging"
-        difficulty: medium
-        description: "Implement comprehensive audit logging"
+      - id: runtime-security
+        name: "Container Runtime Security"
+        difficulty: hard
+        points: 500
+        description: "Secure container runtime"
         skills:
-          - Kubernetes audit
-          - Cloud trail
-          - Log integrity
+          - Seccomp profiles
+          - AppArmor/SELinux
+          - Read-only filesystems
+          - Capability dropping
+        flags: 2
+        tools:
+          - Falco
+          - Sysdig
+          - gVisor
+
+      - id: container-escape
+        name: "Container Escape Prevention"
+        difficulty: hard
+        points: 500
+        description: "Prevent container escapes"
+        skills:
+          - Privileged container risks
+          - Capability analysis
+          - Host mount risks
+          - Namespace isolation
+        flags: 2
+        risks:
+          - "privileged: true"
+          - "hostPID: true"
+          - "docker.sock mount"
+
+  # IaC Security
+  iac_security:
+    name: "Infrastructure as Code Security"
+    description: "Secure IaC configurations"
+    challenges:
+      - id: terraform-scanning
+        name: "Terraform Security Scanning"
+        difficulty: easy
+        points: 100
+        description: "Scan Terraform for misconfigurations"
+        skills:
+          - tfsec/Checkov usage
+          - Custom policies
+          - CI integration
+          - Remediation
+        flags: 2
+        tools:
+          - tfsec
+          - Checkov
+          - Terrascan
+          - Snyk IaC
+          - KICS
+
+      - id: terraform-secrets
+        name: "Terraform Secret Management"
+        difficulty: medium
+        points: 250
+        description: "Secure secrets in Terraform"
+        skills:
+          - State file security
+          - Variable encryption
+          - Vault integration
+          - Remote state
+        flags: 2
+        best_practices:
+          - "Use remote encrypted state"
+          - "Never commit .tfvars with secrets"
+          - "Use Vault provider"
+          - "Mark sensitive variables"
+
+      - id: cloudformation-security
+        name: "CloudFormation Security"
+        difficulty: medium
+        points: 250
+        description: "Secure CloudFormation templates"
+        skills:
+          - cfn-lint
+          - cfn-nag
+          - Parameter validation
+          - IAM policies
         flags: 2
 
+      - id: policy-as-code
+        name: "Policy as Code"
+        difficulty: medium
+        points: 250
+        description: "Implement policy as code"
+        skills:
+          - OPA/Rego
+          - Sentinel
+          - Policy testing
+          - CI enforcement
+        flags: 2
+        tools:
+          - Open Policy Agent (OPA)
+          - Sentinel (HashiCorp)
+          - Conftest
+
+  # Secrets Management
   secrets_management:
     name: "Secrets Management"
+    description: "Secure secret handling"
     challenges:
-      - id: vault-basics
-        name: "HashiCorp Vault Basics"
+      - id: secret-detection
+        name: "Secret Detection in Code"
+        difficulty: easy
+        points: 100
+        description: "Detect secrets in repositories"
+        skills:
+          - Pre-commit hooks
+          - CI scanning
+          - Git history scanning
+          - Entropy analysis
+        flags: 2
+        tools:
+          - gitleaks
+          - truffleHog
+          - detect-secrets
+          - git-secrets
+          - ggshield
+
+      - id: vault-integration
+        name: "HashiCorp Vault Integration"
         difficulty: medium
-        description: "Manage secrets with Vault"
+        points: 250
+        description: "Integrate Vault for secret management"
         skills:
           - Vault setup
+          - Auth methods
           - Secret engines
-          - Authentication
-        flags: 3
-
-      - id: vault-k8s
-        name: "Vault with Kubernetes"
-        difficulty: hard
-        description: "Integrate Vault with Kubernetes"
-        skills:
-          - K8s auth method
-          - Sidecar injection
           - Dynamic secrets
         flags: 3
+        auth_methods:
+          - "Token"
+          - "AppRole"
+          - "Kubernetes"
+          - "AWS IAM"
 
-      - id: external-secrets
-        name: "External Secrets Operator"
-        difficulty: medium
-        description: "Manage secrets with ESO"
+      - id: secret-rotation
+        name: "Automated Secret Rotation"
+        difficulty: hard
+        points: 500
+        description: "Implement secret rotation"
         skills:
-          - ESO configuration
-          - Cloud provider integration
-          - Secret sync
+          - Rotation strategies
+          - Zero-downtime rotation
+          - Database credentials
+          - API keys
         flags: 2
 
-templates:
-  devops_labs:
-    - name: "CI/CD Security Lab"
-      services:
-        - jenkins
-        - gitea
-        - registry
-        - sonarqube
-      features:
-        - Vulnerable pipeline
-        - Secret exposure
-        - Injection points
+  # Security Testing Automation
+  security_automation:
+    name: "Security Testing Automation"
+    description: "Automated security in pipelines"
+    challenges:
+      - id: devsecops-pipeline
+        name: "Complete DevSecOps Pipeline"
+        difficulty: hard
+        points: 500
+        description: "Build full security pipeline"
+        skills:
+          - Multi-stage scanning
+          - Quality gates
+          - Report aggregation
+          - Developer feedback
+        flags: 4
+        stages:
+          - "Pre-commit: secrets, linting"
+          - "Build: SAST, SCA, container scan"
+          - "Test: DAST, API testing"
+          - "Deploy: IaC scan, compliance"
 
-    - name: "Container Security Lab"
-      services:
-        - docker-in-docker
-        - vulnerable-images
-        - trivy-server
-      features:
-        - Escape scenarios
-        - Vulnerable images
-        - Scanning tools
+      - id: progressive-security
+        name: "Progressive Security Gates"
+        difficulty: medium
+        points: 250
+        description: "Implement progressive security"
+        skills:
+          - Feature branch: advisory
+          - Main branch: blocking
+          - Release: strict
+          - Risk-based gates
+        flags: 2
+        approach:
+          - "Feature: warn, don't block"
+          - "Main: block critical/high"
+          - "Release: block all findings"
 
-    - name: "GitOps Lab"
-      services:
-        - gitea
-        - argocd
-        - vault
-      features:
-        - Secret management
-        - Deployment automation
-        - Policy enforcement
+      - id: security-dashboards
+        name: "Security Metrics & Dashboards"
+        difficulty: medium
+        points: 250
+        description: "Build security visibility"
+        skills:
+          - Metric collection
+          - Dashboard creation
+          - Trend analysis
+          - Risk scoring
+        flags: 2
+        metrics:
+          - "Mean time to remediate"
+          - "Vulnerability density"
+          - "Security debt"
+          - "Coverage percentage"
 
-    - name: "Full DevSecOps Lab"
-      services:
-        - gitlab
-        - jenkins
-        - sonarqube
-        - trivy
-        - vault
-        - argocd
-        - kind
-      features:
-        - Complete pipeline
-        - Security gates
-        - Policy as code
+# Docker Templates
+docker_templates:
+  devsecops_lab:
+    name: "DevSecOps Lab"
+    services:
+      - name: "GitLab"
+        image: "gitlab/gitlab-ce"
+        ports: ["80:80", "443:443"]
+      - name: "SonarQube"
+        image: "sonarqube:community"
+        ports: ["9000:9000"]
+      - name: "Vault"
+        image: "vault:latest"
+        ports: ["8200:8200"]
+      - name: "Jenkins"
+        image: "jenkins/jenkins:lts"
+        ports: ["8080:8080"]
 
+  scanning_tools:
+    name: "Security Scanning Tools"
+    services:
+      - name: "OWASP ZAP"
+        image: "owasp/zap2docker-stable"
+      - name: "Trivy"
+        image: "aquasec/trivy"
+      - name: "SonarQube"
+        image: "sonarqube:community"
+
+# Tools Reference
+tools:
+  sast:
+    - name: "SonarQube"
+      url: "https://www.sonarqube.org/"
+      free: true
+    - name: "Semgrep"
+      url: "https://semgrep.dev/"
+      free: true
+    - name: "CodeQL"
+      url: "https://codeql.github.com/"
+      free: true
+
+  sca:
+    - name: "Snyk"
+      url: "https://snyk.io/"
+    - name: "OWASP Dependency-Check"
+      url: "https://owasp.org/www-project-dependency-check/"
+      free: true
+    - name: "Trivy"
+      url: "https://github.com/aquasecurity/trivy"
+      free: true
+
+  dast:
+    - name: "OWASP ZAP"
+      url: "https://www.zaproxy.org/"
+      free: true
+    - name: "Nuclei"
+      url: "https://github.com/projectdiscovery/nuclei"
+      free: true
+
+  secrets:
+    - name: "gitleaks"
+      url: "https://github.com/gitleaks/gitleaks"
+      free: true
+    - name: "truffleHog"
+      url: "https://github.com/trufflesecurity/trufflehog"
+      free: true
+
+  iac:
+    - name: "Checkov"
+      url: "https://www.checkov.io/"
+      free: true
+    - name: "tfsec"
+      url: "https://github.com/aquasecurity/tfsec"
+      free: true
+
+# Learning Resources
 resources:
-  tools:
-    - "Trivy"
-    - "Grype"
-    - "tfsec"
-    - "checkov"
-    - "gitleaks"
-    - "truffleHog"
-    - "Snyk"
-    - "SonarQube"
-    - "HashiCorp Vault"
-    - "Falco"
+  official:
+    - name: "OWASP DevSecOps Guideline"
+      url: "https://owasp.org/www-project-devsecops-guideline/"
+    - name: "NIST SSDF"
+      url: "https://csrc.nist.gov/publications/detail/sp/800-218/final"
+    - name: "SLSA Framework"
+      url: "https://slsa.dev/"
+
+  training:
+    - name: "DevSecOps University"
+      url: "https://www.devsecops.org/"
+    - name: "GitLab Security Training"
+      url: "https://about.gitlab.com/handbook/security/"
 
   references:
-    - "OWASP DevSecOps Guideline"
-    - "CIS Docker Benchmark"
-    - "NIST Container Security Guide"
-    - "DevSecOps.org"
+    - name: "AWS DevSecOps Blog"
+      url: "https://aws.amazon.com/blogs/devops/"
+    - name: "CNCF Security"
+      url: "https://www.cncf.io/projects/security/"

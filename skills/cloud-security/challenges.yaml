@@ -1,241 +1,559 @@
 # Cloud Security Skills and Challenges
-# Domain: AWS, Azure, GCP Security
+# Based on: MITRE ATT&CK Cloud, CIS Benchmarks, Cloud Provider Best Practices
+# References: https://attack.mitre.org/matrices/enterprise/cloud/
+# Last Updated: 2025
 
 domain: cloud-security
-description: "Cloud infrastructure security testing and exploitation"
+version: "2.0"
+description: "Cloud infrastructure security testing for AWS, Azure, GCP, and Kubernetes"
+
+# Shared Responsibility Model
+shared_responsibility:
+  customer_responsible:
+    - Identity and Access Management
+    - Data encryption
+    - Network configuration
+    - Application security
+    - OS patching (IaaS)
+
+  provider_responsible:
+    - Physical security
+    - Hardware/Infrastructure
+    - Hypervisor security
+    - Network infrastructure
 
 categories:
-  aws:
-    name: "AWS Security"
-    challenges:
-      - id: aws-enum
-        name: "AWS Enumeration"
-        difficulty: medium
-        description: "Enumerate AWS resources and permissions"
-        skills:
-          - AWS CLI
-          - IAM enumeration
-          - S3 bucket discovery
-        flags: 3
 
-      - id: aws-ssrf-imds
-        name: "IMDS Exploitation"
+  # AWS Security
+  aws:
+    name: "Amazon Web Services Security"
+    description: "AWS-specific security testing"
+    provider_docs: "https://docs.aws.amazon.com/security/"
+
+    challenges:
+      - id: aws-iam-enum
+        name: "IAM Enumeration"
         difficulty: medium
-        description: "Exploit SSRF to access EC2 metadata"
+        points: 250
+        mitre_technique: "T1087.004"
+        description: "Enumerate IAM users, roles, and policies"
         skills:
-          - Instance metadata
-          - Role credential theft
-        flags: 2
+          - AWS CLI usage
+          - IAM policy analysis
+          - Permission boundaries
+        flags: 3
+        commands:
+          - "aws iam list-users"
+          - "aws iam list-roles"
+          - "aws iam get-account-authorization-details"
+        tools:
+          - enumerate-iam
+          - Pacu
 
       - id: aws-s3-misconfig
-        name: "S3 Bucket Misconfigurations"
+        name: "S3 Bucket Misconfiguration"
         difficulty: easy
+        points: 100
+        mitre_technique: "T1530"
         description: "Find and exploit public S3 buckets"
         skills:
           - Bucket enumeration
           - ACL analysis
+          - Object listing
         flags: 2
+        commands:
+          - "aws s3 ls s3://bucket-name --no-sign-request"
+          - "aws s3api get-bucket-acl --bucket bucket-name"
+        tools:
+          - s3scanner
+          - bucket_finder
+          - S3Scanner
 
-      - id: aws-privesc
-        name: "AWS IAM Privilege Escalation"
-        difficulty: hard
-        description: "Escalate privileges through IAM misconfigs"
+      - id: aws-metadata-ssrf
+        name: "EC2 Metadata Service Exploitation"
+        difficulty: medium
+        points: 250
+        mitre_technique: "T1552.005"
+        description: "Access IMDS via SSRF to steal credentials"
         skills:
-          - IAM policy analysis
-          - Assume role attacks
-          - Lambda exploitation
-        flags: 4
+          - IMDSv1 exploitation
+          - IMDSv2 bypass techniques
+          - Role credential theft
+        flags: 3
+        endpoints:
+          imdsv1: "http://169.254.169.254/latest/meta-data/"
+          imdsv2_token: "curl -X PUT http://169.254.169.254/latest/api/token -H 'X-aws-ec2-metadata-token-ttl-seconds: 21600'"
+        targets:
+          - "/latest/meta-data/iam/security-credentials/"
+          - "/latest/user-data"
 
-      - id: aws-lambda
-        name: "Lambda Security"
+      - id: aws-iam-privesc
+        name: "IAM Privilege Escalation"
         difficulty: hard
-        description: "Exploit serverless vulnerabilities"
+        points: 500
+        mitre_technique: "T1548"
+        description: "Escalate privileges through IAM misconfigurations"
+        skills:
+          - Policy analysis
+          - Permission abuse
+          - Role chaining
+        flags: 4
+        escalation_paths:
+          - "iam:CreatePolicyVersion"
+          - "iam:SetDefaultPolicyVersion"
+          - "iam:PassRole + lambda:CreateFunction"
+          - "iam:AttachUserPolicy/AttachRolePolicy"
+          - "sts:AssumeRole (cross-account)"
+        tools:
+          - Pacu
+          - pmapper
+          - cloudsplaining
+
+      - id: aws-lambda-attacks
+        name: "Lambda Function Exploitation"
+        difficulty: hard
+        points: 500
+        mitre_technique: "T1648"
+        description: "Attack serverless Lambda functions"
         skills:
           - Function enumeration
           - Environment variable extraction
+          - Event injection
           - Layer poisoning
         flags: 3
+        commands:
+          - "aws lambda list-functions"
+          - "aws lambda get-function --function-name NAME"
 
-  azure:
-    name: "Azure Security"
-    challenges:
-      - id: azure-enum
-        name: "Azure Enumeration"
+      - id: aws-secrets-extraction
+        name: "Secrets Manager/SSM Extraction"
         difficulty: medium
-        description: "Enumerate Azure AD and resources"
+        points: 250
+        mitre_technique: "T1552.004"
+        description: "Extract secrets from AWS secret stores"
         skills:
-          - Azure CLI
-          - Az PowerShell
+          - Secrets Manager access
+          - SSM Parameter Store
+          - KMS decryption
+        flags: 2
+        commands:
+          - "aws secretsmanager list-secrets"
+          - "aws ssm get-parameters-by-path --path /"
+
+      - id: aws-cloudtrail-evasion
+        name: "CloudTrail Evasion"
+        difficulty: expert
+        points: 1000
+        mitre_technique: "T1562.008"
+        description: "Evade or disable CloudTrail logging"
+        skills:
+          - Trail enumeration
+          - Logging gaps
+          - Event filtering
+        flags: 2
+        note: "For educational purposes - understand detection"
+
+  # Azure Security
+  azure:
+    name: "Microsoft Azure Security"
+    description: "Azure-specific security testing"
+    provider_docs: "https://docs.microsoft.com/en-us/azure/security/"
+
+    challenges:
+      - id: azure-ad-enum
+        name: "Azure AD Enumeration"
+        difficulty: medium
+        points: 250
+        mitre_technique: "T1087.004"
+        description: "Enumerate Azure AD users, groups, and apps"
+        skills:
+          - Azure CLI/PowerShell
+          - Graph API
           - ROADtools
         flags: 3
+        tools:
+          - ROADtools
+          - AzureHound
+          - o365creeper
 
-      - id: azure-ad-attack
-        name: "Azure AD Attacks"
-        difficulty: hard
-        description: "Attack Azure Active Directory"
+      - id: azure-blob-misconfig
+        name: "Blob Storage Misconfiguration"
+        difficulty: easy
+        points: 100
+        mitre_technique: "T1530"
+        description: "Find public Azure blob containers"
         skills:
-          - Password spray
-          - Token theft
-          - Consent phishing
-        flags: 3
-
-      - id: azure-blob
-        name: "Blob Storage Attacks"
-        difficulty: medium
-        description: "Exploit Azure blob misconfigurations"
-        skills:
+          - Container enumeration
           - Anonymous access
           - SAS token abuse
         flags: 2
+        tools:
+          - MicroBurst
+          - blobhunter
 
-      - id: azure-managed-id
+      - id: azure-managed-identity
         name: "Managed Identity Exploitation"
         difficulty: hard
-        description: "Abuse managed identities for privilege escalation"
+        points: 500
+        mitre_technique: "T1552.005"
+        description: "Abuse Azure managed identities"
         skills:
-          - IMDS exploitation
-          - Token extraction
-        flags: 2
-
-  gcp:
-    name: "GCP Security"
-    challenges:
-      - id: gcp-enum
-        name: "GCP Enumeration"
-        difficulty: medium
-        description: "Enumerate GCP projects and resources"
-        skills:
-          - gcloud CLI
-          - Service account discovery
-        flags: 2
-
-      - id: gcp-metadata
-        name: "Metadata Server Exploitation"
-        difficulty: medium
-        description: "Access GCP metadata for credentials"
-        skills:
-          - Metadata API
+          - IMDS access
           - Token theft
-        flags: 2
+          - Identity scope analysis
+        flags: 3
+        endpoint: "http://169.254.169.254/metadata/identity/oauth2/token"
 
-      - id: gcp-privesc
-        name: "GCP Privilege Escalation"
+      - id: azure-ad-connect
+        name: "Azure AD Connect Attacks"
         difficulty: hard
-        description: "Escalate privileges in GCP"
+        points: 500
+        description: "Attack hybrid identity configurations"
         skills:
-          - IAM misconfiguration
-          - Service account impersonation
+          - Password hash sync
+          - Pass-through auth
+          - Seamless SSO
         flags: 3
 
+      - id: azure-rbac-abuse
+        name: "Azure RBAC Abuse"
+        difficulty: hard
+        points: 500
+        mitre_technique: "T1548"
+        description: "Escalate through RBAC misconfigurations"
+        skills:
+          - Role assignment analysis
+          - Custom role abuse
+          - Subscription escalation
+        flags: 3
+        dangerous_roles:
+          - Owner
+          - Contributor
+          - User Access Administrator
+
+      - id: azure-keyvault
+        name: "Key Vault Secrets Extraction"
+        difficulty: medium
+        points: 250
+        mitre_technique: "T1552"
+        description: "Access secrets from Azure Key Vault"
+        skills:
+          - Vault enumeration
+          - Access policy analysis
+          - Secret/key extraction
+        flags: 2
+
+  # GCP Security
+  gcp:
+    name: "Google Cloud Platform Security"
+    description: "GCP-specific security testing"
+    provider_docs: "https://cloud.google.com/security"
+
+    challenges:
+      - id: gcp-iam-enum
+        name: "GCP IAM Enumeration"
+        difficulty: medium
+        points: 250
+        mitre_technique: "T1087.004"
+        description: "Enumerate GCP IAM and service accounts"
+        skills:
+          - gcloud CLI
+          - IAM policy analysis
+          - Service account keys
+        flags: 3
+        commands:
+          - "gcloud projects get-iam-policy PROJECT"
+          - "gcloud iam service-accounts list"
+
+      - id: gcp-bucket-misconfig
+        name: "GCS Bucket Misconfiguration"
+        difficulty: easy
+        points: 100
+        mitre_technique: "T1530"
+        description: "Find public GCS buckets"
+        skills:
+          - Bucket enumeration
+          - ACL analysis
+          - allUsers permissions
+        flags: 2
+        tools:
+          - GCPBucketBrute
+          - gcphound
+
+      - id: gcp-metadata-ssrf
+        name: "GCP Metadata Exploitation"
+        difficulty: medium
+        points: 250
+        mitre_technique: "T1552.005"
+        description: "Access GCP metadata server"
+        skills:
+          - Metadata server access
+          - Service account token theft
+          - Compute metadata
+        flags: 3
+        endpoint: "http://metadata.google.internal/computeMetadata/v1/"
+        required_header: "Metadata-Flavor: Google"
+
+      - id: gcp-service-account-abuse
+        name: "Service Account Impersonation"
+        difficulty: hard
+        points: 500
+        mitre_technique: "T1548"
+        description: "Impersonate GCP service accounts"
+        skills:
+          - iam.serviceAccountTokenCreator
+          - Service account chains
+          - Short-lived credentials
+        flags: 3
+
+  # Kubernetes Security
   kubernetes:
     name: "Kubernetes Security"
+    description: "Container orchestration security"
+    references:
+      - "https://kubernetes.io/docs/concepts/security/"
+      - "https://attack.mitre.org/matrices/enterprise/containers/"
+
     challenges:
       - id: k8s-enum
         name: "Kubernetes Enumeration"
         difficulty: medium
-        description: "Enumerate Kubernetes cluster"
+        points: 250
+        mitre_technique: "T1613"
+        description: "Enumerate Kubernetes cluster resources"
         skills:
-          - kubectl
+          - kubectl basics
           - API server access
-          - Secret extraction
+          - RBAC analysis
         flags: 3
+        commands:
+          - "kubectl get all -A"
+          - "kubectl auth can-i --list"
+          - "kubectl get secrets -A"
 
-      - id: k8s-escape
+      - id: k8s-secret-extraction
+        name: "Secret Extraction"
+        difficulty: medium
+        points: 250
+        mitre_technique: "T1552.007"
+        description: "Extract secrets from Kubernetes"
+        skills:
+          - Secret enumeration
+          - ServiceAccount tokens
+          - Base64 decoding
+        flags: 3
+        commands:
+          - "kubectl get secrets"
+          - "kubectl get secret NAME -o jsonpath='{.data}'"
+
+      - id: k8s-container-escape
         name: "Container Escape"
         difficulty: hard
-        description: "Escape from container to host"
+        points: 500
+        mitre_technique: "T1611"
+        description: "Escape container to host"
         skills:
-          - Privileged containers
+          - Privileged container abuse
           - Host path mounts
-          - Kernel exploits
+          - Linux capabilities
+        flags: 3
+        escape_techniques:
+          - "privileged: true"
+          - "hostPID: true"
+          - "hostNetwork: true"
+          - "/var/run/docker.sock mount"
+
+      - id: k8s-rbac-abuse
+        name: "RBAC Privilege Escalation"
+        difficulty: hard
+        points: 500
+        mitre_technique: "T1078.004"
+        description: "Escalate through RBAC misconfigurations"
+        skills:
+          - Role/ClusterRole analysis
+          - Binding abuse
+          - Impersonation
+        flags: 4
+        dangerous_verbs:
+          - "create pods"
+          - "create secrets"
+          - "impersonate"
+          - "escalate"
+
+      - id: k8s-pod-escape
+        name: "Pod Security Bypass"
+        difficulty: hard
+        points: 500
+        description: "Bypass Pod Security Standards"
+        skills:
+          - PSS/PSP bypass
+          - Admission controller evasion
+          - Resource manipulation
         flags: 2
 
-      - id: k8s-privesc
-        name: "K8s Privilege Escalation"
-        difficulty: hard
-        description: "Escalate from pod to cluster admin"
-        skills:
-          - RBAC abuse
-          - Service account tokens
-          - Node compromise
-        flags: 4
-
-      - id: k8s-network
-        name: "K8s Network Attacks"
+      - id: k8s-etcd-access
+        name: "etcd Secrets Access"
         difficulty: expert
-        description: "Attack Kubernetes networking"
+        points: 1000
+        mitre_technique: "T1552"
+        description: "Direct etcd access for secrets"
         skills:
-          - Network policies bypass
-          - Service mesh exploitation
-          - DNS manipulation
-        flags: 3
+          - etcd enumeration
+          - Certificate abuse
+          - Secret decryption
+        flags: 2
+        commands:
+          - "etcdctl get / --prefix --keys-only"
 
-  terraform:
-    name: "Infrastructure as Code Security"
+  # Multi-Cloud & General
+  multi_cloud:
+    name: "Multi-Cloud Security"
+    description: "Cross-cloud security techniques"
+
     challenges:
-      - id: tf-secrets
-        name: "Terraform Secrets Exposure"
+      - id: cloud-recon
+        name: "Cloud Asset Discovery"
         difficulty: easy
-        description: "Find secrets in Terraform state/code"
+        points: 100
+        description: "Discover cloud assets from external perspective"
+        skills:
+          - DNS enumeration
+          - Certificate transparency
+          - Cloud IP ranges
+        flags: 2
+        tools:
+          - CloudEnum
+          - cloud_enum
+          - Prowler
+
+      - id: iac-secrets
+        name: "Infrastructure as Code Secrets"
+        difficulty: medium
+        points: 250
+        mitre_technique: "T1552.001"
+        description: "Find secrets in Terraform/CloudFormation"
         skills:
           - State file analysis
-          - Variable extraction
-        flags: 2
+          - Template scanning
+          - Git history
+        flags: 3
+        tools:
+          - trufflehog
+          - gitleaks
+          - ggshield
 
-      - id: tf-misconfig
-        name: "IaC Misconfigurations"
-        difficulty: medium
-        description: "Identify insecure Terraform configurations"
+      - id: cloud-lateral
+        name: "Cross-Account/Subscription Movement"
+        difficulty: hard
+        points: 500
+        mitre_technique: "T1550.001"
+        description: "Move between cloud accounts"
         skills:
-          - Security scanning
-          - Best practice violations
+          - Trust relationship abuse
+          - Role assumption
+          - Federation abuse
         flags: 3
 
-templates:
-  cloud_labs:
-    - name: "LocalStack AWS Lab"
-      description: "Local AWS simulation with LocalStack"
-      services:
-        - localstack
-        - attacker
-      features:
-        - S3
-        - IAM
-        - Lambda
-        - EC2 metadata simulation
+# Docker Templates for Local Testing
+docker_templates:
+  localstack:
+    name: "AWS LocalStack Lab"
+    image: "localstack/localstack:latest"
+    services:
+      - s3
+      - iam
+      - lambda
+      - ec2
+      - secretsmanager
+      - ssm
+      - sts
+    ports:
+      - "4566:4566"
+    environment:
+      - AWS_ACCESS_KEY_ID=test
+      - AWS_SECRET_ACCESS_KEY=test
 
-    - name: "Kind Kubernetes Lab"
-      description: "Local K8s cluster for testing"
-      services:
-        - kind-cluster
-        - attacker
-      features:
-        - Multi-node cluster
-        - Vulnerable RBAC
-        - Exposed secrets
+  kind_cluster:
+    name: "Kubernetes Kind Lab"
+    description: "Local Kubernetes cluster"
+    setup: |
+      kind create cluster --name security-lab
+      kubectl apply -f vulnerable-resources.yaml
 
-    - name: "Multi-Cloud Lab"
-      description: "Simulated multi-cloud environment"
-      services:
-        - localstack
-        - azurite
-        - gcp-emulator
-        - attacker
+  azurite:
+    name: "Azure Storage Emulator"
+    image: "mcr.microsoft.com/azure-storage/azurite"
+    ports:
+      - "10000:10000"
+      - "10001:10001"
+      - "10002:10002"
 
+# Security Tools
+tools:
+  aws:
+    - name: "Pacu"
+      url: "https://github.com/RhinoSecurityLabs/pacu"
+      description: "AWS exploitation framework"
+    - name: "Prowler"
+      url: "https://github.com/prowler-cloud/prowler"
+      description: "AWS security assessment"
+    - name: "ScoutSuite"
+      url: "https://github.com/nccgroup/ScoutSuite"
+      description: "Multi-cloud security auditing"
+    - name: "CloudMapper"
+      url: "https://github.com/duo-labs/cloudmapper"
+      description: "AWS visualization and analysis"
+
+  azure:
+    - name: "ROADtools"
+      url: "https://github.com/dirkjanm/ROADtools"
+      description: "Azure AD exploration"
+    - name: "AzureHound"
+      url: "https://github.com/BloodHoundAD/AzureHound"
+      description: "Azure BloodHound collector"
+    - name: "MicroBurst"
+      url: "https://github.com/NetSPI/MicroBurst"
+      description: "Azure security toolkit"
+
+  kubernetes:
+    - name: "kube-hunter"
+      url: "https://github.com/aquasecurity/kube-hunter"
+      description: "Kubernetes penetration testing"
+    - name: "kubeaudit"
+      url: "https://github.com/Shopify/kubeaudit"
+      description: "Kubernetes security auditing"
+    - name: "Trivy"
+      url: "https://github.com/aquasecurity/trivy"
+      description: "Container vulnerability scanner"
+    - name: "Falco"
+      url: "https://github.com/falcosecurity/falco"
+      description: "Runtime security monitoring"
+
+# Learning Resources
 resources:
-  tools:
-    - "AWS CLI"
-    - "Azure CLI"
-    - "gcloud"
-    - "kubectl"
-    - "Pacu"
-    - "ScoutSuite"
-    - "Prowler"
-    - "kube-hunter"
-    - "trivy"
+  official:
+    - name: "AWS Security Documentation"
+      url: "https://docs.aws.amazon.com/security/"
+    - name: "Azure Security Center"
+      url: "https://docs.microsoft.com/azure/security/"
+    - name: "GCP Security"
+      url: "https://cloud.google.com/security"
+    - name: "Kubernetes Security"
+      url: "https://kubernetes.io/docs/concepts/security/"
+
+  training:
+    - name: "CloudGoat"
+      url: "https://github.com/RhinoSecurityLabs/cloudgoat"
+      description: "Vulnerable AWS lab"
+    - name: "Kubernetes Goat"
+      url: "https://github.com/madhuakula/kubernetes-goat"
+      description: "Vulnerable K8s lab"
+    - name: "AzureGoat"
+      url: "https://github.com/ine-labs/AzureGoat"
+      description: "Vulnerable Azure lab"
 
   references:
-    - "HackTricks Cloud"
-    - "CloudGoat"
-    - "Kubernetes Goat"
-    - "Rhino Security Labs Blog"
+    - name: "HackTricks Cloud"
+      url: "https://cloud.hacktricks.xyz/"
+    - name: "MITRE ATT&CK Cloud"
+      url: "https://attack.mitre.org/matrices/enterprise/cloud/"

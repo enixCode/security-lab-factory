@@ -1,245 +1,710 @@
 # Web Security Skills and Challenges
-# Domain: OWASP Top 10, Web Application Security
+# Based on: OWASP Top 10:2025, PortSwigger Academy, HackTricks
+# Last Updated: 2025
+# Reference: https://owasp.org/Top10/2025/
 
 domain: web-security
-description: "Web application security testing and vulnerability exploitation"
+version: "2.0"
+description: "Web application security based on OWASP Top 10:2025"
 
+# OWASP Top 10:2025 Categories
 categories:
-  injection:
-    name: "Injection Attacks"
+
+  # A01:2025 - Broken Access Control
+  broken_access_control:
+    owasp_id: "A01:2025"
+    name: "Broken Access Control"
+    description: "Access control enforces policy so users cannot act outside permissions"
+    cwe_count: 40
     challenges:
-      - id: sqli-basic
-        name: "SQL Injection - Basic"
+      - id: idor-basic
+        name: "Insecure Direct Object Reference"
         difficulty: easy
-        description: "Exploit a basic SQL injection in login form"
+        points: 100
+        description: "Access other users' data by manipulating object IDs"
+        skills:
+          - Parameter tampering
+          - Horizontal privilege escalation
+        flags: 1
+        attack_vectors:
+          - "Modify user_id parameter in URL"
+          - "Change document IDs in API calls"
+        remediation: "Implement proper authorization checks"
+
+      - id: idor-api
+        name: "API IDOR Exploitation"
+        difficulty: medium
+        points: 250
+        description: "Exploit IDOR in REST/GraphQL APIs"
+        skills:
+          - API enumeration
+          - UUID prediction
+          - JWT manipulation
+        flags: 2
+
+      - id: vertical-privesc
+        name: "Vertical Privilege Escalation"
+        difficulty: hard
+        points: 500
+        description: "Escalate from user to admin role"
+        skills:
+          - Role manipulation
+          - Admin endpoint discovery
+          - Parameter pollution
+        flags: 3
+
+      - id: path-traversal
+        name: "Path Traversal"
+        difficulty: medium
+        points: 250
+        description: "Access files outside web root"
+        skills:
+          - Directory traversal sequences
+          - URL encoding bypass
+          - Null byte injection
+        flags: 2
+
+  # A02:2025 - Cryptographic Failures
+  cryptographic_failures:
+    owasp_id: "A02:2025"
+    name: "Cryptographic Failures"
+    description: "Failures related to cryptography leading to sensitive data exposure"
+    challenges:
+      - id: weak-hashing
+        name: "Weak Password Hashing"
+        difficulty: easy
+        points: 100
+        description: "Crack weakly hashed passwords"
+        skills:
+          - Hash identification
+          - Rainbow tables
+          - hashcat/john usage
+        flags: 1
+
+      - id: ssl-tls-misconfig
+        name: "TLS/SSL Misconfiguration"
+        difficulty: medium
+        points: 250
+        description: "Exploit weak TLS configurations"
+        skills:
+          - SSL/TLS analysis
+          - Downgrade attacks
+          - Certificate validation bypass
+        flags: 2
+
+      - id: sensitive-data-exposure
+        name: "Sensitive Data in Transit"
+        difficulty: medium
+        points: 250
+        description: "Intercept unencrypted sensitive data"
+        skills:
+          - Traffic analysis
+          - MITM techniques
+          - Cookie theft
+        flags: 2
+
+  # A03:2025 - Software Supply Chain Failures (NEW)
+  supply_chain:
+    owasp_id: "A03:2025"
+    name: "Software Supply Chain Failures"
+    description: "Vulnerabilities in dependencies, build processes, and distribution"
+    cwe_count: 5
+    new_in_2025: true
+    challenges:
+      - id: dependency-confusion
+        name: "Dependency Confusion"
+        difficulty: hard
+        points: 500
+        description: "Exploit package manager confusion attacks"
+        skills:
+          - npm/pip/gem internals
+          - Private registry bypass
+          - Package hijacking
+        flags: 2
+
+      - id: vulnerable-deps
+        name: "Vulnerable Dependencies"
+        difficulty: easy
+        points: 100
+        description: "Identify and exploit known CVEs in dependencies"
+        skills:
+          - SCA tools (Snyk, npm audit)
+          - CVE research
+          - Exploit adaptation
+        flags: 1
+
+      - id: typosquatting
+        name: "Package Typosquatting"
+        difficulty: medium
+        points: 250
+        description: "Detect malicious lookalike packages"
+        skills:
+          - Package verification
+          - Signature validation
+          - SBOM analysis
+        flags: 2
+
+  # A04:2025 - Security Misconfiguration
+  security_misconfiguration:
+    owasp_id: "A04:2025"
+    name: "Security Misconfiguration"
+    description: "Missing or misconfigured security hardening"
+    challenges:
+      - id: default-creds
+        name: "Default Credentials"
+        difficulty: easy
+        points: 100
+        description: "Access systems using default passwords"
+        skills:
+          - Credential databases
+          - Service fingerprinting
+        flags: 1
+
+      - id: verbose-errors
+        name: "Verbose Error Messages"
+        difficulty: easy
+        points: 100
+        description: "Extract information from error messages"
+        skills:
+          - Stack trace analysis
+          - Path disclosure
+          - Version detection
+        flags: 1
+
+      - id: cors-misconfig
+        name: "CORS Misconfiguration"
+        difficulty: medium
+        points: 250
+        description: "Exploit permissive CORS policies"
+        skills:
+          - CORS headers
+          - Origin spoofing
+          - Credential theft
+        flags: 2
+
+      - id: http-headers
+        name: "Missing Security Headers"
+        difficulty: easy
+        points: 100
+        description: "Exploit missing security headers"
+        skills:
+          - CSP bypass
+          - Clickjacking
+          - MIME sniffing
+        flags: 1
+
+  # A05:2025 - Injection
+  injection:
+    owasp_id: "A05:2025"
+    name: "Injection"
+    description: "SQL, NoSQL, OS, LDAP injection vulnerabilities"
+    challenges:
+      - id: sqli-auth-bypass
+        name: "SQL Injection - Auth Bypass"
+        difficulty: easy
+        points: 100
+        description: "Bypass authentication using SQLi"
         skills:
           - SQL syntax
-          - Authentication bypass
+          - Boolean logic
+          - Comment injection
         flags: 1
-        docker_image: "vulnerables/web-dvwa"
+        payloads:
+          - "' OR '1'='1"
+          - "admin'--"
+          - "' OR 1=1--"
 
       - id: sqli-union
-        name: "SQL Injection - UNION Based"
+        name: "SQL Injection - UNION"
         difficulty: medium
-        description: "Extract data using UNION-based SQL injection"
+        points: 250
+        description: "Extract data using UNION-based SQLi"
         skills:
-          - UNION SELECT attacks
-          - Database enumeration
+          - Column enumeration
+          - Table discovery
+          - Data extraction
         flags: 2
-        docker_image: "vulnerables/web-dvwa"
+        tools:
+          - sqlmap
+          - Burp Suite
 
-      - id: sqli-blind
-        name: "SQL Injection - Blind"
+      - id: sqli-blind-boolean
+        name: "SQL Injection - Blind Boolean"
         difficulty: hard
-        description: "Exploit time-based and boolean-based blind SQLi"
+        points: 500
+        description: "Extract data using boolean-based blind SQLi"
         skills:
-          - Blind injection techniques
-          - Automation with sqlmap
+          - Conditional responses
+          - Binary search
+          - Automation
+        flags: 3
+
+      - id: sqli-blind-time
+        name: "SQL Injection - Time-based"
+        difficulty: hard
+        points: 500
+        description: "Extract data using time delays"
+        skills:
+          - Sleep functions
+          - Response timing
+          - Database fingerprinting
         flags: 3
 
       - id: nosql-injection
         name: "NoSQL Injection"
         difficulty: medium
-        description: "Exploit MongoDB injection vulnerabilities"
+        points: 250
+        description: "Exploit MongoDB/CouchDB injection"
         skills:
-          - MongoDB query syntax
-          - JSON injection
+          - JSON operators
+          - Query manipulation
+          - Authentication bypass
+        flags: 2
+        payloads:
+          - '{"$gt": ""}'
+          - '{"$ne": null}'
+          - '{"$regex": ".*"}'
+
+      - id: command-injection
+        name: "OS Command Injection"
+        difficulty: medium
+        points: 250
+        description: "Execute system commands through the application"
+        skills:
+          - Command separators
+          - Blind command injection
+          - Out-of-band techniques
+        flags: 2
+        payloads:
+          - "; id"
+          - "| cat /etc/passwd"
+          - "$(whoami)"
+
+      - id: ssti
+        name: "Server-Side Template Injection"
+        difficulty: hard
+        points: 500
+        description: "Achieve RCE via template injection"
+        skills:
+          - Template engine detection
+          - Payload crafting
+          - Sandbox escape
+        flags: 3
+        engines:
+          - Jinja2
+          - Twig
+          - Freemarker
+
+      - id: ldap-injection
+        name: "LDAP Injection"
+        difficulty: hard
+        points: 500
+        description: "Exploit LDAP query injection"
+        skills:
+          - LDAP syntax
+          - Wildcard abuse
+          - Blind extraction
         flags: 2
 
+  # A06:2025 - Insecure Design
+  insecure_design:
+    owasp_id: "A06:2025"
+    name: "Insecure Design"
+    description: "Missing or ineffective security controls in design"
+    challenges:
+      - id: business-logic
+        name: "Business Logic Flaws"
+        difficulty: medium
+        points: 250
+        description: "Exploit flaws in application logic"
+        skills:
+          - Workflow analysis
+          - Race conditions
+          - State manipulation
+        flags: 2
+
+      - id: race-condition
+        name: "Race Condition Exploitation"
+        difficulty: hard
+        points: 500
+        description: "Exploit TOCTOU and race conditions"
+        skills:
+          - Concurrent requests
+          - Turbo Intruder
+          - State manipulation
+        flags: 2
+
+      - id: mass-assignment
+        name: "Mass Assignment"
+        difficulty: medium
+        points: 250
+        description: "Modify protected fields via mass assignment"
+        skills:
+          - Parameter discovery
+          - Hidden field manipulation
+          - API analysis
+        flags: 2
+
+  # A07:2025 - Authentication Failures
+  authentication_failures:
+    owasp_id: "A07:2025"
+    name: "Authentication Failures"
+    description: "Weaknesses in authentication mechanisms"
+    challenges:
+      - id: brute-force
+        name: "Brute Force Attack"
+        difficulty: easy
+        points: 100
+        description: "Bypass authentication via brute force"
+        skills:
+          - Wordlist selection
+          - Rate limit bypass
+          - Account lockout bypass
+        flags: 1
+        tools:
+          - Hydra
+          - Burp Intruder
+          - ffuf
+
+      - id: jwt-vulnerabilities
+        name: "JWT Attacks"
+        difficulty: medium
+        points: 250
+        description: "Exploit JWT implementation flaws"
+        skills:
+          - Algorithm confusion (none/HS256)
+          - Key confusion attacks
+          - JWT cracking
+        flags: 3
+        tools:
+          - jwt_tool
+          - jwt.io
+          - hashcat
+
+      - id: session-fixation
+        name: "Session Fixation"
+        difficulty: medium
+        points: 250
+        description: "Hijack user sessions via fixation"
+        skills:
+          - Session management
+          - Cookie manipulation
+          - URL session IDs
+        flags: 2
+
+      - id: password-reset
+        name: "Password Reset Poisoning"
+        difficulty: hard
+        points: 500
+        description: "Exploit password reset mechanisms"
+        skills:
+          - Host header injection
+          - Token prediction
+          - Link manipulation
+        flags: 2
+
+      - id: oauth-flaws
+        name: "OAuth 2.0 Vulnerabilities"
+        difficulty: hard
+        points: 500
+        description: "Exploit OAuth misconfigurations"
+        skills:
+          - Redirect URI manipulation
+          - State parameter bypass
+          - Token leakage
+        flags: 3
+
+      - id: 2fa-bypass
+        name: "2FA Bypass"
+        difficulty: hard
+        points: 500
+        description: "Bypass two-factor authentication"
+        skills:
+          - Rate limiting bypass
+          - Response manipulation
+          - Backup code exploitation
+        flags: 2
+
+  # A08:2025 - Software and Data Integrity Failures
+  integrity_failures:
+    owasp_id: "A08:2025"
+    name: "Software and Data Integrity Failures"
+    description: "Code/data without integrity verification"
+    challenges:
+      - id: insecure-deserial
+        name: "Insecure Deserialization"
+        difficulty: hard
+        points: 500
+        description: "Achieve RCE via deserialization"
+        skills:
+          - Gadget chains
+          - ysoserial
+          - Object injection
+        flags: 3
+
+      - id: ci-cd-attacks
+        name: "CI/CD Pipeline Attacks"
+        difficulty: hard
+        points: 500
+        description: "Compromise build pipelines"
+        skills:
+          - Pipeline injection
+          - Secret extraction
+          - Artifact tampering
+        flags: 3
+
+  # A09:2025 - Security Logging and Alerting Failures
+  logging_failures:
+    owasp_id: "A09:2025"
+    name: "Security Logging and Alerting Failures"
+    description: "Insufficient logging and monitoring"
+    cwe_count: 5
+    challenges:
+      - id: log-injection
+        name: "Log Injection"
+        difficulty: medium
+        points: 250
+        description: "Inject malicious entries into logs"
+        skills:
+          - Log forging
+          - CRLF injection
+          - Log4Shell patterns
+        flags: 2
+
+      - id: audit-bypass
+        name: "Audit Evasion"
+        difficulty: hard
+        points: 500
+        description: "Perform actions without detection"
+        skills:
+          - Timing attacks
+          - Log deletion
+          - Anti-forensics
+        flags: 2
+
+  # A10:2025 - Mishandling of Exceptional Conditions (NEW)
+  exceptional_conditions:
+    owasp_id: "A10:2025"
+    name: "Mishandling of Exceptional Conditions"
+    description: "Improper error handling, logical errors, failing open"
+    cwe_count: 24
+    new_in_2025: true
+    challenges:
+      - id: error-handling
+        name: "Error Handling Exploitation"
+        difficulty: medium
+        points: 250
+        description: "Exploit improper error handling"
+        skills:
+          - Exception triggering
+          - Fail-open conditions
+          - Error message mining
+        flags: 2
+
+      - id: fail-open
+        name: "Fail-Open Conditions"
+        difficulty: hard
+        points: 500
+        description: "Exploit services that fail open"
+        skills:
+          - Denial conditions
+          - Timeout exploitation
+          - Default behaviors
+        flags: 2
+
+  # Additional Critical Categories
   xss:
-    name: "Cross-Site Scripting"
+    name: "Cross-Site Scripting (XSS)"
+    description: "Client-side code injection - Part of A03:2021 Injection"
     challenges:
       - id: xss-reflected
         name: "Reflected XSS"
         difficulty: easy
-        description: "Find and exploit reflected XSS vulnerabilities"
+        points: 100
+        description: "Execute JavaScript via reflected input"
         skills:
-          - JavaScript basics
-          - URL encoding
+          - Input reflection points
+          - Context analysis
+          - Filter bypass
         flags: 1
+        payloads:
+          - '<script>alert(1)</script>'
+          - '<img src=x onerror=alert(1)>'
+          - '<svg onload=alert(1)>'
 
       - id: xss-stored
         name: "Stored XSS"
         difficulty: medium
-        description: "Exploit persistent XSS to steal cookies"
+        points: 250
+        description: "Persist malicious scripts for other users"
         skills:
-          - DOM manipulation
+          - Persistent injection
           - Cookie theft
+          - Keylogging
         flags: 2
 
       - id: xss-dom
         name: "DOM-based XSS"
         difficulty: hard
+        points: 500
         description: "Exploit client-side JavaScript vulnerabilities"
         skills:
-          - DOM analysis
-          - Source/sink tracing
+          - Source/sink analysis
+          - DOM manipulation
+          - CSP bypass
         flags: 2
-
-  authentication:
-    name: "Authentication Flaws"
-    challenges:
-      - id: auth-brute
-        name: "Brute Force Attack"
-        difficulty: easy
-        description: "Bypass weak authentication with brute force"
-        skills:
-          - Password attacks
-          - Rate limiting bypass
-        flags: 1
-
-      - id: auth-jwt
-        name: "JWT Vulnerabilities"
-        difficulty: medium
-        description: "Exploit JWT algorithm confusion and weak secrets"
-        skills:
-          - JWT structure
-          - Algorithm manipulation
-        flags: 3
-
-      - id: auth-oauth
-        name: "OAuth Misconfigurations"
-        difficulty: hard
-        description: "Exploit OAuth2 implementation flaws"
-        skills:
-          - OAuth2 flow
-          - Token theft
-        flags: 2
+        tools:
+          - DOM Invader
+          - Browser DevTools
 
   ssrf:
     name: "Server-Side Request Forgery"
+    description: "Force server to make requests to unintended locations"
     challenges:
       - id: ssrf-basic
         name: "Basic SSRF"
         difficulty: medium
-        description: "Exploit SSRF to access internal services"
+        points: 250
+        description: "Access internal resources via SSRF"
         skills:
           - URL manipulation
-          - Internal network discovery
+          - Protocol handlers
+          - IP address bypass
         flags: 2
+        targets:
+          - "http://127.0.0.1"
+          - "http://169.254.169.254"
+          - "file:///etc/passwd"
 
-      - id: ssrf-cloud
+      - id: ssrf-cloud-metadata
         name: "Cloud Metadata SSRF"
         difficulty: hard
-        description: "Access cloud metadata endpoints via SSRF"
+        points: 500
+        description: "Access cloud instance metadata"
         skills:
-          - AWS/GCP metadata
-          - IMDSv1/v2
+          - AWS/GCP/Azure metadata
+          - IMDSv1/v2 bypass
+          - Credential extraction
+        flags: 3
+        endpoints:
+          - "http://169.254.169.254/latest/meta-data/"
+          - "http://metadata.google.internal/"
+
+      - id: ssrf-blind
+        name: "Blind SSRF"
+        difficulty: hard
+        points: 500
+        description: "Exploit SSRF without direct response"
+        skills:
+          - Out-of-band techniques
+          - DNS rebinding
+          - Timing attacks
+        flags: 2
+
+  xxe:
+    name: "XML External Entities"
+    description: "Exploit XML parsers to access files or SSRF"
+    challenges:
+      - id: xxe-basic
+        name: "Basic XXE"
+        difficulty: medium
+        points: 250
+        description: "Read files via XXE"
+        skills:
+          - DTD declaration
+          - Entity expansion
+          - Protocol handlers
+        flags: 2
+        payloads:
+          - '<!DOCTYPE foo [<!ENTITY xxe SYSTEM "file:///etc/passwd">]>'
+
+      - id: xxe-blind
+        name: "Blind XXE"
+        difficulty: hard
+        points: 500
+        description: "Exfiltrate data via out-of-band XXE"
+        skills:
+          - External DTD
+          - Error-based extraction
+          - OOB channels
         flags: 3
 
-  file_vulnerabilities:
-    name: "File-based Vulnerabilities"
-    challenges:
-      - id: lfi
-        name: "Local File Inclusion"
-        difficulty: medium
-        description: "Exploit LFI to read sensitive files"
-        skills:
-          - Path traversal
-          - Log poisoning
-        flags: 2
-
-      - id: rfi
-        name: "Remote File Inclusion"
-        difficulty: hard
-        description: "Achieve RCE through RFI"
-        skills:
-          - Remote code execution
-          - Reverse shells
-        flags: 2
-
-      - id: file-upload
-        name: "Unrestricted File Upload"
-        difficulty: medium
-        description: "Bypass file upload restrictions"
-        skills:
-          - MIME type bypass
-          - Extension tricks
-        flags: 2
-
-  deserialization:
-    name: "Insecure Deserialization"
-    challenges:
-      - id: php-deserial
-        name: "PHP Object Injection"
-        difficulty: hard
-        description: "Exploit PHP unserialize vulnerabilities"
-        skills:
-          - PHP object injection
-          - Magic methods
-        flags: 2
-
-      - id: java-deserial
-        name: "Java Deserialization"
-        difficulty: expert
-        description: "Exploit Java deserialization with gadget chains"
-        skills:
-          - Ysoserial
-          - Gadget chains
-        flags: 3
-
-  api_security:
-    name: "API Security"
-    challenges:
-      - id: api-bola
-        name: "Broken Object Level Authorization"
-        difficulty: medium
-        description: "Exploit IDOR in REST APIs"
-        skills:
-          - API enumeration
-          - Authorization bypass
-        flags: 2
-
-      - id: api-mass-assign
-        name: "Mass Assignment"
-        difficulty: medium
-        description: "Exploit mass assignment vulnerabilities"
-        skills:
-          - Parameter pollution
-          - Privilege escalation
-        flags: 2
-
-      - id: graphql
-        name: "GraphQL Attacks"
-        difficulty: hard
-        description: "Exploit GraphQL introspection and injection"
-        skills:
-          - GraphQL queries
-          - Schema extraction
-        flags: 3
-
-templates:
+# Docker Images for Labs
+docker_images:
   vulnerable_apps:
+    - name: "OWASP Juice Shop"
+      image: "bkimminich/juice-shop:latest"
+      description: "Modern vulnerable web app with 100+ challenges"
+      ports: ["3000:3000"]
+
     - name: "DVWA"
       image: "vulnerables/web-dvwa"
       description: "Damn Vulnerable Web Application"
-
-    - name: "OWASP Juice Shop"
-      image: "bkimminich/juice-shop"
-      description: "Modern vulnerable web application"
+      ports: ["80:80"]
 
     - name: "WebGoat"
-      image: "webgoat/webgoat"
-      description: "OWASP WebGoat training platform"
+      image: "webgoat/webgoat:latest"
+      description: "OWASP WebGoat learning platform"
+      ports: ["8080:8080", "9090:9090"]
 
-    - name: "Mutillidae"
+    - name: "OWASP Mutillidae II"
       image: "citizenstig/nowasp"
-      description: "OWASP Mutillidae II"
+      description: "Free vulnerable web application"
+      ports: ["80:80"]
 
-    - name: "bWAPP"
-      image: "raesene/bwapp"
-      description: "Buggy Web Application"
+    - name: "Damn Vulnerable GraphQL"
+      image: "dolevf/dvga"
+      description: "Vulnerable GraphQL application"
+      ports: ["5013:5013"]
 
-resources:
-  tools:
-    - "Burp Suite"
+    - name: "crAPI"
+      image: "crapi/crapi:latest"
+      description: "Completely Ridiculous API"
+      ports: ["8888:8888"]
+
+# Tools Reference
+tools:
+  reconnaissance:
+    - "Burp Suite Pro/Community"
     - "OWASP ZAP"
-    - "sqlmap"
-    - "XSStrike"
     - "ffuf"
+    - "gobuster"
     - "nuclei"
 
+  exploitation:
+    - "sqlmap"
+    - "XSStrike"
+    - "jwt_tool"
+    - "ysoserial"
+    - "Commix"
+
+  proxy:
+    - "Burp Suite"
+    - "OWASP ZAP"
+    - "mitmproxy"
+    - "Caido"
+
+# Learning Resources
+resources:
+  official:
+    - name: "OWASP Top 10:2025"
+      url: "https://owasp.org/Top10/2025/"
+    - name: "OWASP Testing Guide"
+      url: "https://owasp.org/www-project-web-security-testing-guide/"
+    - name: "OWASP Cheat Sheets"
+      url: "https://cheatsheetseries.owasp.org/"
+
+  training:
+    - name: "PortSwigger Web Security Academy"
+      url: "https://portswigger.net/web-security"
+      free: true
+    - name: "HackTheBox"
+      url: "https://www.hackthebox.com/"
+    - name: "TryHackMe"
+      url: "https://tryhackme.com/"
+
   references:
-    - "OWASP Testing Guide"
-    - "PortSwigger Web Security Academy"
-    - "HackTricks"
+    - name: "HackTricks"
+      url: "https://book.hacktricks.xyz/"
+    - name: "PayloadsAllTheThings"
+      url: "https://github.com/swisskyrepo/PayloadsAllTheThings"

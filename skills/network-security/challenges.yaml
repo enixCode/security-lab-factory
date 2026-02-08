@@ -1,252 +1,661 @@
 # Network Security Skills and Challenges
-# Domain: Network Penetration Testing, Active Directory, Infrastructure
+# Based on: MITRE ATT&CK Framework, PTES, OSSTMM
+# Reference: https://attack.mitre.org/
+# Last Updated: 2025
 
 domain: network-security
-description: "Network infrastructure security testing and exploitation"
+version: "2.0"
+description: "Network penetration testing based on MITRE ATT&CK Framework"
+
+# MITRE ATT&CK Tactics Mapping
+mitre_tactics:
+  - TA0043: Reconnaissance
+  - TA0001: Initial Access
+  - TA0002: Execution
+  - TA0003: Persistence
+  - TA0004: Privilege Escalation
+  - TA0005: Defense Evasion
+  - TA0006: Credential Access
+  - TA0007: Discovery
+  - TA0008: Lateral Movement
+  - TA0009: Collection
+  - TA0010: Exfiltration
+  - TA0011: Command and Control
 
 categories:
+
+  # Reconnaissance Phase
   reconnaissance:
+    mitre_tactic: "TA0043"
     name: "Network Reconnaissance"
+    description: "Information gathering and target enumeration"
     challenges:
-      - id: nmap-basics
-        name: "Nmap Fundamentals"
+      - id: nmap-host-discovery
+        name: "Host Discovery"
         difficulty: easy
-        description: "Master network scanning with Nmap"
+        points: 100
+        mitre_technique: "T1595.001"
+        description: "Discover live hosts on the network"
         skills:
-          - Port scanning
-          - Service detection
+          - ARP scanning
+          - ICMP probes
+          - TCP/UDP discovery
+        flags: 1
+        commands:
+          - "nmap -sn 10.10.10.0/24"
+          - "arp-scan -l"
+          - "netdiscover -r 10.10.10.0/24"
+
+      - id: port-scanning
+        name: "Port Scanning & Service Detection"
+        difficulty: easy
+        points: 100
+        mitre_technique: "T1046"
+        description: "Enumerate open ports and services"
+        skills:
+          - TCP/UDP scanning
+          - Service versioning
           - OS fingerprinting
         flags: 2
+        commands:
+          - "nmap -sV -sC -p- target"
+          - "masscan -p1-65535 --rate=1000"
+          - "rustscan -a target"
 
-      - id: passive-recon
-        name: "Passive Reconnaissance"
+      - id: smb-enumeration
+        name: "SMB Enumeration"
         difficulty: medium
-        description: "Gather intelligence without active scanning"
+        points: 250
+        mitre_technique: "T1135"
+        description: "Enumerate SMB shares and users"
         skills:
-          - OSINT
-          - DNS enumeration
-          - Subdomain discovery
+          - Null session
+          - Share enumeration
+          - User enumeration
+        flags: 2
+        tools:
+          - enum4linux-ng
+          - smbclient
+          - crackmapexec
+
+      - id: dns-enumeration
+        name: "DNS Reconnaissance"
+        difficulty: medium
+        points: 250
+        mitre_technique: "T1596.001"
+        description: "DNS enumeration and zone transfer"
+        skills:
+          - Zone transfer (AXFR)
+          - Subdomain brute force
+          - DNS cache snooping
+        flags: 2
+        tools:
+          - dnsrecon
+          - dnsenum
+          - fierce
+
+      - id: snmp-enum
+        name: "SNMP Enumeration"
+        difficulty: medium
+        points: 250
+        mitre_technique: "T1602"
+        description: "Extract information via SNMP"
+        skills:
+          - Community string guessing
+          - MIB walking
+          - SNMP v1/v2c/v3
         flags: 2
 
-  active_directory:
-    name: "Active Directory Attacks"
+  # Initial Access Phase
+  initial_access:
+    mitre_tactic: "TA0001"
+    name: "Initial Access"
+    description: "Gaining foothold in the network"
     challenges:
-      - id: ad-enum
-        name: "AD Enumeration"
+      - id: password-spray
+        name: "Password Spraying"
         difficulty: medium
-        description: "Enumerate Active Directory environment"
+        points: 250
+        mitre_technique: "T1110.003"
+        description: "Spray common passwords across accounts"
         skills:
-          - LDAP queries
-          - BloodHound
-          - PowerView
+          - Username enumeration
+          - Password policy analysis
+          - Lockout avoidance
+        flags: 2
+        tools:
+          - spray
+          - crackmapexec
+          - kerbrute
+
+      - id: phishing-simulation
+        name: "Phishing Attack"
+        difficulty: medium
+        points: 250
+        mitre_technique: "T1566"
+        description: "Simulate phishing for credential theft"
+        skills:
+          - Email crafting
+          - Payload delivery
+          - Landing page creation
+        flags: 2
+        tools:
+          - gophish
+          - evilginx2
+          - modlishka
+
+      - id: exploit-public-app
+        name: "Exploit Public-Facing Application"
+        difficulty: hard
+        points: 500
+        mitre_technique: "T1190"
+        description: "Exploit vulnerable web services"
+        skills:
+          - CVE research
+          - Exploit modification
+          - Payload crafting
         flags: 3
-        docker_services:
-          - "windows-dc"
-          - "windows-workstation"
+
+  # Credential Access
+  credential_access:
+    mitre_tactic: "TA0006"
+    name: "Credential Access"
+    description: "Stealing credentials and secrets"
+    challenges:
+      - id: llmnr-poisoning
+        name: "LLMNR/NBT-NS Poisoning"
+        difficulty: medium
+        points: 250
+        mitre_technique: "T1557.001"
+        description: "Capture NTLMv2 hashes via poisoning"
+        skills:
+          - Responder usage
+          - Hash capture
+          - Relay attacks
+        flags: 2
+        tools:
+          - Responder
+          - Inveigh
+          - mitm6
+
+      - id: ntlm-relay
+        name: "NTLM Relay Attack"
+        difficulty: hard
+        points: 500
+        mitre_technique: "T1557.001"
+        description: "Relay captured NTLM to other services"
+        skills:
+          - SMB signing analysis
+          - Relay configuration
+          - Target selection
+        flags: 3
+        tools:
+          - ntlmrelayx
+          - multirelay
+          - impacket
 
       - id: kerberoasting
         name: "Kerberoasting"
         difficulty: medium
-        description: "Extract and crack service account hashes"
+        points: 250
+        mitre_technique: "T1558.003"
+        description: "Extract service account TGS for cracking"
         skills:
-          - Kerberos protocol
+          - SPN enumeration
+          - TGS request
           - Hash cracking
         flags: 2
+        tools:
+          - GetUserSPNs.py
+          - Rubeus
+          - hashcat
 
-      - id: asreproast
+      - id: asreproasting
         name: "AS-REP Roasting"
         difficulty: medium
-        description: "Attack accounts without pre-authentication"
+        points: 250
+        mitre_technique: "T1558.004"
+        description: "Attack accounts without Kerberos pre-auth"
         skills:
-          - Kerberos vulnerabilities
-          - GetNPUsers
+          - Account enumeration
+          - AS-REP extraction
+          - Hash cracking
         flags: 2
+        tools:
+          - GetNPUsers.py
+          - Rubeus
+          - kerbrute
 
-      - id: pass-the-hash
-        name: "Pass the Hash"
-        difficulty: medium
-        description: "Lateral movement using NTLM hashes"
-        skills:
-          - NTLM protocol
-          - Mimikatz
-          - CrackMapExec
-        flags: 2
-
-      - id: golden-ticket
-        name: "Golden Ticket Attack"
+      - id: lsass-dump
+        name: "LSASS Credential Dumping"
         difficulty: hard
-        description: "Forge Kerberos tickets for persistence"
+        points: 500
+        mitre_technique: "T1003.001"
+        description: "Extract credentials from LSASS memory"
         skills:
-          - KRBTGT hash extraction
-          - Ticket forging
+          - Mimikatz
+          - LSASS techniques
+          - EDR bypass
         flags: 3
+        tools:
+          - mimikatz
+          - pypykatz
+          - nanodump
 
       - id: dcsync
         name: "DCSync Attack"
         difficulty: hard
-        description: "Extract all domain credentials"
+        points: 500
+        mitre_technique: "T1003.006"
+        description: "Replicate DC to extract all hashes"
         skills:
           - Replication rights
-          - Secretsdump
+          - DRSUAPI
+          - NTDS extraction
+        flags: 3
+        prerequisites:
+          - "Domain Admin or replication rights"
+        tools:
+          - secretsdump.py
+          - mimikatz
+
+  # Active Directory Attacks
+  active_directory:
+    name: "Active Directory Attacks"
+    description: "Windows domain exploitation techniques"
+    challenges:
+      - id: ad-enumeration
+        name: "AD Enumeration"
+        difficulty: medium
+        points: 250
+        mitre_technique: "T1087.002"
+        description: "Enumerate AD objects and relationships"
+        skills:
+          - LDAP queries
+          - BloodHound collection
+          - PowerView
+        flags: 3
+        tools:
+          - BloodHound
+          - SharpHound
+          - ldapdomaindump
+
+      - id: bloodhound-analysis
+        name: "Attack Path Analysis"
+        difficulty: medium
+        points: 250
+        description: "Find attack paths using BloodHound"
+        skills:
+          - Graph analysis
+          - Shortest path queries
+          - ACL abuse identification
         flags: 2
 
-  lateral_movement:
-    name: "Lateral Movement"
-    challenges:
-      - id: psexec
-        name: "PsExec and WMI"
-        difficulty: medium
-        description: "Move laterally using Windows protocols"
+      - id: acl-abuse
+        name: "ACL Abuse"
+        difficulty: hard
+        points: 500
+        mitre_technique: "T1222.001"
+        description: "Exploit misconfigured AD permissions"
         skills:
-          - SMB
-          - WMI
-          - Remote execution
+          - GenericAll abuse
+          - WriteDACL abuse
+          - AddMember abuse
+        flags: 3
+        attacks:
+          - ForceChangePassword
+          - AddMember
+          - GenericWrite
+
+      - id: delegation-attacks
+        name: "Kerberos Delegation Attacks"
+        difficulty: hard
+        points: 500
+        mitre_technique: "T1558"
+        description: "Abuse Kerberos delegation"
+        skills:
+          - Unconstrained delegation
+          - Constrained delegation
+          - Resource-based delegation
+        flags: 4
+        techniques:
+          - Print Bug + Unconstrained
+          - S4U2Self/S4U2Proxy
+          - RBCD attack
+
+      - id: golden-ticket
+        name: "Golden Ticket"
+        difficulty: expert
+        points: 1000
+        mitre_technique: "T1558.001"
+        description: "Forge TGT for persistence"
+        skills:
+          - KRBTGT hash extraction
+          - Ticket forging
+          - Domain persistence
         flags: 2
+        prerequisites:
+          - "KRBTGT hash"
+
+      - id: silver-ticket
+        name: "Silver Ticket"
+        difficulty: hard
+        points: 500
+        mitre_technique: "T1558.002"
+        description: "Forge TGS for service access"
+        skills:
+          - Service account hash
+          - TGS forging
+          - Service impersonation
+        flags: 2
+
+      - id: certificate-attacks
+        name: "AD Certificate Services Attacks"
+        difficulty: hard
+        points: 500
+        mitre_technique: "T1649"
+        description: "Exploit ADCS misconfigurations"
+        skills:
+          - ESC1-ESC8 attacks
+          - Certificate templates
+          - CA abuse
+        flags: 4
+        tools:
+          - Certipy
+          - Certify
+          - ForgeCert
+
+  # Lateral Movement
+  lateral_movement:
+    mitre_tactic: "TA0008"
+    name: "Lateral Movement"
+    description: "Moving through the network"
+    challenges:
+      - id: pass-the-hash
+        name: "Pass the Hash"
+        difficulty: medium
+        points: 250
+        mitre_technique: "T1550.002"
+        description: "Authenticate using NTLM hash"
+        skills:
+          - Hash extraction
+          - PTH tools
+          - Target selection
+        flags: 2
+        tools:
+          - crackmapexec
+          - pth-winexe
+          - impacket
+
+      - id: pass-the-ticket
+        name: "Pass the Ticket"
+        difficulty: medium
+        points: 250
+        mitre_technique: "T1550.003"
+        description: "Use Kerberos tickets for authentication"
+        skills:
+          - Ticket extraction
+          - Ticket injection
+          - Ticket conversion
+        flags: 2
+
+      - id: overpass-the-hash
+        name: "Overpass the Hash"
+        difficulty: hard
+        points: 500
+        mitre_technique: "T1550"
+        description: "Request Kerberos ticket using NTLM hash"
+        skills:
+          - Hash to TGT
+          - Ticket usage
+          - Tool selection
+        flags: 2
+
+      - id: wmi-execution
+        name: "WMI Lateral Movement"
+        difficulty: medium
+        points: 250
+        mitre_technique: "T1047"
+        description: "Execute commands via WMI"
+        skills:
+          - WMI queries
+          - Remote execution
+          - Process creation
+        flags: 2
+        tools:
+          - wmiexec.py
+          - wmipersist.py
+
+      - id: psexec
+        name: "PsExec/SMB Execution"
+        difficulty: medium
+        points: 250
+        mitre_technique: "T1569.002"
+        description: "Execute via SMB service creation"
+        skills:
+          - Service creation
+          - Named pipes
+          - SMB authentication
+        flags: 2
+        tools:
+          - psexec.py
+          - smbexec.py
+          - crackmapexec
 
       - id: ssh-pivoting
-        name: "SSH Pivoting"
+        name: "SSH Tunneling & Pivoting"
         difficulty: medium
-        description: "Pivot through compromised hosts"
+        points: 250
+        mitre_technique: "T1572"
+        description: "Create tunnels through compromised hosts"
         skills:
-          - SSH tunneling
-          - ProxyChains
+          - Local port forwarding
           - Dynamic port forwarding
+          - ProxyChains
         flags: 3
+        commands:
+          - "ssh -L 8080:internal:80 user@pivot"
+          - "ssh -D 9050 user@pivot"
+          - "proxychains nmap internal"
 
-      - id: chisel-tunnel
-        name: "Chisel Tunneling"
+      - id: chisel-ligolo
+        name: "Advanced Tunneling"
         difficulty: hard
+        points: 500
+        mitre_technique: "T1572"
         description: "Create reverse tunnels for pivoting"
         skills:
-          - Reverse tunnels
-          - SOCKS proxy
+          - Chisel tunneling
+          - Ligolo-ng
+          - Traffic routing
         flags: 2
+        tools:
+          - chisel
+          - ligolo-ng
+          - sshuttle
 
+  # Privilege Escalation
   privilege_escalation:
+    mitre_tactic: "TA0004"
     name: "Privilege Escalation"
+    description: "Gaining higher privileges"
     challenges:
       - id: linux-privesc
         name: "Linux Privilege Escalation"
         difficulty: medium
-        description: "Escalate privileges on Linux systems"
+        points: 250
+        description: "Escalate to root on Linux"
         skills:
-          - SUID binaries
+          - SUID/SGID binaries
           - Sudo misconfigs
-          - Kernel exploits
+          - Capabilities
           - Cron jobs
+          - Kernel exploits
         flags: 5
+        tools:
+          - linpeas
+          - linux-exploit-suggester
+          - pspy
 
       - id: windows-privesc
         name: "Windows Privilege Escalation"
         difficulty: medium
-        description: "Escalate privileges on Windows systems"
+        points: 250
+        description: "Escalate to SYSTEM on Windows"
         skills:
           - Service misconfigs
-          - Token impersonation
-          - UAC bypass
           - Unquoted paths
+          - Token impersonation
+          - AlwaysInstallElevated
+          - DLL hijacking
         flags: 5
+        tools:
+          - winPEAS
+          - PowerUp
+          - BeRoot
 
+      - id: potato-attacks
+        name: "Potato Privilege Escalation"
+        difficulty: hard
+        points: 500
+        mitre_technique: "T1134"
+        description: "Service account to SYSTEM via Potato"
+        skills:
+          - SeImpersonate abuse
+          - Token manipulation
+          - NTLM relay to self
+        flags: 2
+        techniques:
+          - JuicyPotato
+          - PrintSpoofer
+          - GodPotato
+
+  # Network Protocol Attacks
   network_attacks:
     name: "Network Protocol Attacks"
+    description: "Layer 2-3 attack techniques"
     challenges:
-      - id: arp-poison
-        name: "ARP Poisoning"
+      - id: arp-spoofing
+        name: "ARP Spoofing/MITM"
         difficulty: medium
-        description: "Man-in-the-middle via ARP spoofing"
+        points: 250
+        mitre_technique: "T1557.002"
+        description: "Intercept traffic via ARP spoofing"
         skills:
-          - ARP protocol
+          - ARP cache poisoning
           - Traffic interception
-          - Ettercap/Bettercap
+          - Credential capture
         flags: 2
+        tools:
+          - bettercap
+          - ettercap
+          - arpspoof
 
-      - id: llmnr-poison
-        name: "LLMNR/NBT-NS Poisoning"
+      - id: dns-spoofing
+        name: "DNS Spoofing"
         difficulty: medium
-        description: "Capture NTLMv2 hashes via poisoning"
+        points: 250
+        mitre_technique: "T1557"
+        description: "Redirect DNS queries"
         skills:
-          - Responder
-          - Hash cracking
+          - DNS cache poisoning
+          - Response injection
+          - Traffic redirection
         flags: 2
 
-      - id: dns-attacks
-        name: "DNS Attacks"
+      - id: vlan-hopping
+        name: "VLAN Hopping"
         difficulty: hard
-        description: "DNS spoofing and zone transfers"
+        points: 500
+        description: "Escape VLAN isolation"
         skills:
-          - DNS protocol
-          - Zone transfer
-          - DNS tunneling
-        flags: 3
-
-  wireless:
-    name: "Wireless Security"
-    challenges:
-      - id: wpa2-crack
-        name: "WPA2 Cracking"
-        difficulty: medium
-        description: "Capture and crack WPA2 handshakes"
-        skills:
-          - Aircrack-ng
-          - Handshake capture
-          - Dictionary attacks
+          - Switch spoofing
+          - Double tagging
+          - DTP manipulation
         flags: 2
 
-      - id: evil-twin
-        name: "Evil Twin Attack"
-        difficulty: hard
-        description: "Create rogue access points"
-        skills:
-          - Hostapd
-          - Credential harvesting
-        flags: 2
+# Docker Lab Templates
+docker_templates:
+  basic_network:
+    name: "Basic Network Lab"
+    services:
+      - attacker: "kalilinux/kali-rolling"
+      - target-linux: "vulnerables/cve-2021-3156"
+      - target-windows: "mcr.microsoft.com/windows/servercore"
+    network: "10.10.10.0/24"
 
-templates:
-  network_labs:
-    - name: "Basic Network Lab"
-      services:
-        - router
-        - attacker
-        - victim-linux
-        - victim-windows
-      network: "10.10.10.0/24"
+  active_directory:
+    name: "Active Directory Lab"
+    services:
+      - dc: "Windows Server 2019 DC"
+      - workstation: "Windows 10 Pro"
+      - attacker: "kalilinux/kali-rolling"
+    domain: "lab.local"
+    network: "192.168.1.0/24"
+    note: "Requires Windows images or DVAD"
 
-    - name: "Active Directory Lab"
-      services:
-        - domain-controller
-        - workstation-1
-        - workstation-2
-        - file-server
-        - attacker
-      network: "192.168.1.0/24"
-      domain: "lab.local"
+  multi_tier:
+    name: "Multi-Tier Network"
+    description: "DMZ + Internal segmentation"
+    networks:
+      dmz: "10.0.1.0/24"
+      internal: "10.0.2.0/24"
+      management: "10.0.3.0/24"
 
-    - name: "Multi-tier Network"
-      services:
-        - internet-router
-        - dmz-web
-        - dmz-mail
-        - internal-router
-        - internal-db
-        - internal-workstation
-      networks:
-        - dmz: "10.0.1.0/24"
-        - internal: "10.0.2.0/24"
+# Tools Reference
+tools:
+  reconnaissance:
+    - name: "Nmap"
+      url: "https://nmap.org/"
+    - name: "Masscan"
+      url: "https://github.com/robertdavidgraham/masscan"
+    - name: "Rustscan"
+      url: "https://github.com/RustScan/RustScan"
 
+  ad_attacks:
+    - name: "BloodHound"
+      url: "https://github.com/BloodHoundAD/BloodHound"
+    - name: "Impacket"
+      url: "https://github.com/fortra/impacket"
+    - name: "CrackMapExec"
+      url: "https://github.com/byt3bl33d3r/CrackMapExec"
+    - name: "Rubeus"
+      url: "https://github.com/GhostPack/Rubeus"
+    - name: "Mimikatz"
+      url: "https://github.com/gentilkiwi/mimikatz"
+    - name: "Certipy"
+      url: "https://github.com/ly4k/Certipy"
+
+  pivoting:
+    - name: "Chisel"
+      url: "https://github.com/jpillora/chisel"
+    - name: "Ligolo-ng"
+      url: "https://github.com/nicocha30/ligolo-ng"
+    - name: "sshuttle"
+      url: "https://github.com/sshuttle/sshuttle"
+
+# Learning Resources
 resources:
-  tools:
-    - "Nmap"
-    - "Metasploit"
-    - "BloodHound"
-    - "CrackMapExec"
-    - "Impacket"
-    - "Responder"
-    - "Mimikatz"
-    - "Chisel"
-    - "Ligolo-ng"
+  frameworks:
+    - name: "MITRE ATT&CK"
+      url: "https://attack.mitre.org/"
+    - name: "Atomic Red Team"
+      url: "https://github.com/redcanaryco/atomic-red-team"
+
+  training:
+    - name: "HackTheBox"
+      url: "https://www.hackthebox.com/"
+    - name: "TryHackMe"
+      url: "https://tryhackme.com/"
+    - name: "PentesterLab"
+      url: "https://pentesterlab.com/"
 
   references:
-    - "HackTricks"
-    - "PayloadsAllTheThings"
-    - "The Hacker Recipes"
-    - "Active Directory Exploitation Cheat Sheet"
+    - name: "HackTricks"
+      url: "https://book.hacktricks.xyz/"
+    - name: "The Hacker Recipes"
+      url: "https://www.thehacker.recipes/"
+    - name: "ired.team"
+      url: "https://www.ired.team/"
+    - name: "AD Security"
+      url: "https://adsecurity.org/"

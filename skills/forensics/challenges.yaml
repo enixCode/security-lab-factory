@@ -1,302 +1,655 @@
-# Digital Forensics Skills and Challenges
-# Domain: DFIR, Memory Analysis, Disk Forensics
+# Digital Forensics & Incident Response Skills
+# Based on: SANS DFIR, NIST SP 800-86, Eric Zimmerman Tools
+# Reference: https://www.sans.org/digital-forensics-incident-response/
+# Last Updated: 2025
 
 domain: forensics
-description: "Digital forensics and incident response"
+version: "2.0"
+description: "Digital forensics and incident response (DFIR)"
+
+# Investigation Methodology
+methodology:
+  phases:
+    - name: "Identification"
+      description: "Recognize and document potential evidence"
+    - name: "Preservation"
+      description: "Protect and document evidence integrity"
+    - name: "Collection"
+      description: "Gather evidence in forensically sound manner"
+    - name: "Analysis"
+      description: "Examine and interpret evidence"
+    - name: "Reporting"
+      description: "Document findings and conclusions"
 
 categories:
-  disk_forensics:
-    name: "Disk Forensics"
+
+  # Evidence Collection
+  evidence_collection:
+    name: "Evidence Collection & Preservation"
+    description: "Proper evidence handling techniques"
     challenges:
       - id: disk-imaging
-        name: "Disk Imaging"
+        name: "Forensic Disk Imaging"
         difficulty: easy
-        description: "Create and analyze forensic disk images"
+        points: 100
+        description: "Create forensically sound disk images"
         skills:
+          - Write blocking
+          - Image formats (E01, DD, AFF)
+          - Hash verification
+          - Chain of custody
+        flags: 2
+        tools:
           - dd / dcfldd
           - FTK Imager
-          - Hash verification
-        flags: 2
+          - Guymager
+          - ewfacquire
+        commands:
+          - "dcfldd if=/dev/sda of=evidence.dd hash=sha256"
+          - "ewfacquire /dev/sda"
 
-      - id: file-recovery
-        name: "File Recovery"
+      - id: memory-acquisition
+        name: "Memory Acquisition"
         difficulty: medium
-        description: "Recover deleted files from disk images"
+        points: 250
+        description: "Capture volatile memory for analysis"
         skills:
-          - Autopsy
-          - foremost
-          - scalpel
-          - PhotoRec
-        flags: 3
-
-      - id: partition-analysis
-        name: "Partition Analysis"
-        difficulty: medium
-        description: "Analyze partition tables and hidden partitions"
-        skills:
-          - MBR/GPT analysis
-          - Hidden partitions
-          - Slack space
+          - Live memory capture
+          - Hibernation files
+          - Crash dumps
+          - Virtual machine memory
         flags: 2
+        tools:
+          - DumpIt
+          - WinPmem
+          - LiME (Linux)
+          - Magnet RAM Capture
 
-      - id: filesystem-forensics
-        name: "Filesystem Forensics"
-        difficulty: hard
-        description: "Deep filesystem analysis (NTFS, ext4)"
+      - id: triage-collection
+        name: "Rapid Triage Collection"
+        difficulty: medium
+        points: 250
+        description: "Fast artifact collection for IR"
+        skills:
+          - KAPE usage
+          - Velociraptor
+          - Selective collection
+          - Remote acquisition
+        flags: 2
+        tools:
+          - KAPE
+          - Velociraptor
+          - CyLR
+
+  # Disk Forensics
+  disk_forensics:
+    name: "Disk Forensics"
+    description: "Analysis of storage media"
+    challenges:
+      - id: filesystem-analysis
+        name: "Filesystem Analysis"
+        difficulty: medium
+        points: 250
+        description: "Analyze NTFS/ext4 filesystem structures"
         skills:
           - MFT analysis
           - Journal analysis
           - Alternate data streams
-        flags: 4
+          - Timestamps (MACB)
+        flags: 3
+        tools:
+          - Autopsy
+          - Sleuthkit
+          - MFTECmd
+          - NTFS Log Tracker
 
+      - id: deleted-recovery
+        name: "Deleted File Recovery"
+        difficulty: medium
+        points: 250
+        description: "Recover deleted files and fragments"
+        skills:
+          - File carving
+          - Signature analysis
+          - Slack space analysis
+          - Unallocated space
+        flags: 2
+        tools:
+          - foremost
+          - scalpel
+          - PhotoRec
+          - Autopsy
+
+      - id: artifact-analysis
+        name: "Windows Artifact Analysis"
+        difficulty: medium
+        points: 250
+        description: "Analyze Windows forensic artifacts"
+        skills:
+          - Registry analysis
+          - Prefetch files
+          - Shellbags
+          - Jump lists
+          - LNK files
+          - SRUM database
+        flags: 4
+        tools:
+          - Registry Explorer
+          - PECmd
+          - SBECmd
+          - JLECmd
+          - LECmd
+          - SrumECmd
+        artifacts:
+          - "NTUSER.DAT"
+          - "SYSTEM/SAM/SECURITY"
+          - "Prefetch/*.pf"
+          - "Recent/*.lnk"
+
+      - id: browser-forensics
+        name: "Browser Forensics"
+        difficulty: medium
+        points: 250
+        description: "Analyze web browser artifacts"
+        skills:
+          - History analysis
+          - Cache examination
+          - Cookie analysis
+          - Download history
+          - Form data
+        flags: 3
+        tools:
+          - Hindsight
+          - BrowsingHistoryView
+          - ChromeCacheView
+          - ESEDatabaseView
+
+      - id: usb-analysis
+        name: "USB Device Analysis"
+        difficulty: medium
+        points: 250
+        description: "Track USB device connections"
+        skills:
+          - USBSTOR registry
+          - setupapi.dev.log
+          - Event logs
+          - Device timeline
+        flags: 2
+        registry_keys:
+          - "SYSTEM\\CurrentControlSet\\Enum\\USBSTOR"
+          - "SOFTWARE\\Microsoft\\Windows Portable Devices"
+
+  # Memory Forensics
   memory_forensics:
     name: "Memory Forensics"
+    description: "Analysis of volatile memory"
     challenges:
-      - id: mem-basics
-        name: "Memory Analysis Basics"
+      - id: mem-process-analysis
+        name: "Process Analysis"
         difficulty: medium
-        description: "Basic memory dump analysis with Volatility"
+        points: 250
+        description: "Analyze running processes in memory"
         skills:
-          - Volatility3
           - Process listing
-          - Network connections
+          - DLL enumeration
+          - Handle analysis
+          - Command line extraction
         flags: 3
+        volatility_plugins:
+          - "windows.pslist"
+          - "windows.pstree"
+          - "windows.dlllist"
+          - "windows.handles"
+          - "windows.cmdline"
 
-      - id: mem-malware
-        name: "Malware in Memory"
-        difficulty: hard
-        description: "Find and analyze malware in memory dumps"
-        skills:
-          - Code injection
-          - Process hollowing
-          - Malfind plugin
-        flags: 4
-
-      - id: mem-credentials
-        name: "Credential Extraction"
+      - id: mem-network
+        name: "Network Connection Analysis"
         difficulty: medium
+        points: 250
+        description: "Extract network artifacts from memory"
+        skills:
+          - Active connections
+          - Listening ports
+          - Historical connections
+        flags: 2
+        volatility_plugins:
+          - "windows.netscan"
+          - "windows.netstat"
+
+      - id: mem-malware-detect
+        name: "Malware Detection in Memory"
+        difficulty: hard
+        points: 500
+        description: "Detect malicious code in memory"
+        skills:
+          - Code injection detection
+          - Hollowed processes
+          - Hidden processes
+          - Rootkit detection
+        flags: 4
+        volatility_plugins:
+          - "windows.malfind"
+          - "windows.hollowprocesses"
+          - "windows.psxview"
+          - "windows.ssdt"
+
+      - id: mem-credential-extract
+        name: "Credential Extraction"
+        difficulty: hard
+        points: 500
         description: "Extract credentials from memory"
         skills:
-          - Mimikatz offline
-          - LSA secrets
-          - Browser passwords
+          - LSASS analysis
+          - Cached credentials
+          - Session tokens
+          - Kerberos tickets
         flags: 3
+        tools:
+          - volatility3
+          - mimikatz (offline)
+          - pypykatz
 
       - id: mem-timeline
-        name: "Memory Timeline Analysis"
+        name: "Memory Timeline"
         difficulty: hard
+        points: 500
         description: "Create timeline from memory artifacts"
         skills:
-          - Timeline creation
-          - Event correlation
-          - Attack reconstruction
+          - Process timeline
+          - Module loading
+          - Registry extraction
+          - Event reconstruction
         flags: 3
 
+  # Log Analysis
   log_analysis:
     name: "Log Analysis"
+    description: "Security log examination"
     challenges:
-      - id: linux-logs
-        name: "Linux Log Analysis"
-        difficulty: easy
-        description: "Analyze Linux system logs"
-        skills:
-          - syslog
-          - auth.log
-          - journalctl
-        flags: 2
-
-      - id: windows-logs
+      - id: windows-eventlog
         name: "Windows Event Log Analysis"
         difficulty: medium
-        description: "Analyze Windows event logs"
+        points: 250
+        description: "Analyze Windows security events"
         skills:
-          - Security logs
+          - Security.evtx
+          - System.evtx
           - PowerShell logs
-          - Event IDs
-        flags: 3
+          - Sysmon logs
+        flags: 4
+        critical_events:
+          - "4624/4625: Logon success/failure"
+          - "4648: Explicit credential logon"
+          - "4672: Special privileges assigned"
+          - "4688: Process creation"
+          - "4698/4702: Scheduled task"
+          - "7045: Service installed"
+        tools:
+          - EvtxECmd
+          - Event Log Explorer
+          - Hayabusa
+          - Chainsaw
 
-      - id: web-logs
+      - id: linux-logs
+        name: "Linux Log Analysis"
+        difficulty: medium
+        points: 250
+        description: "Analyze Linux system logs"
+        skills:
+          - auth.log
+          - syslog
+          - journalctl
+          - Application logs
+        flags: 2
+        key_logs:
+          - "/var/log/auth.log"
+          - "/var/log/syslog"
+          - "/var/log/secure"
+          - "/var/log/audit/audit.log"
+
+      - id: web-server-logs
         name: "Web Server Log Analysis"
         difficulty: medium
-        description: "Analyze Apache/Nginx access logs"
+        points: 250
+        description: "Analyze web server access logs"
         skills:
-          - Access log parsing
-          - Attack identification
+          - Apache/Nginx logs
+          - Attack pattern detection
           - IP analysis
+          - User agent analysis
         flags: 2
+        patterns:
+          - "SQL injection indicators"
+          - "Path traversal attempts"
+          - "Scanner signatures"
+          - "Exploitation attempts"
 
-      - id: siem-analysis
+      - id: siem-correlation
         name: "SIEM Log Correlation"
         difficulty: hard
-        description: "Correlate logs in SIEM platform"
+        points: 500
+        description: "Correlate events across multiple sources"
         skills:
-          - ELK Stack
-          - Splunk basics
-          - Alert creation
+          - Timeline construction
+          - Cross-source correlation
+          - Attack chain identification
+          - IOC mapping
         flags: 3
+        tools:
+          - Splunk
+          - ELK Stack
+          - Graylog
+          - Sigma rules
 
+  # Network Forensics
   network_forensics:
     name: "Network Forensics"
+    description: "Network traffic analysis"
     challenges:
-      - id: pcap-basics
-        name: "PCAP Analysis Basics"
-        difficulty: easy
-        description: "Analyze network captures with Wireshark"
-        skills:
-          - Wireshark filters
-          - Protocol analysis
-          - Stream extraction
-        flags: 2
-
-      - id: pcap-malware
-        name: "Malicious Traffic Analysis"
+      - id: pcap-analysis
+        name: "PCAP Analysis"
         difficulty: medium
-        description: "Identify malware C2 in network traffic"
+        points: 250
+        description: "Analyze network packet captures"
         skills:
-          - C2 identification
-          - Beacon analysis
+          - Protocol analysis
+          - Stream reconstruction
+          - File extraction
+          - Anomaly detection
+        flags: 3
+        tools:
+          - Wireshark
+          - tshark
+          - NetworkMiner
+          - Zeek
+
+      - id: malware-traffic
+        name: "Malware Traffic Analysis"
+        difficulty: hard
+        points: 500
+        description: "Identify C2 communications in traffic"
+        skills:
+          - Beacon detection
+          - Exfiltration identification
+          - Protocol anomalies
           - DNS tunneling
         flags: 3
+        indicators:
+          - "Regular intervals (beaconing)"
+          - "Unusual port usage"
+          - "Encrypted traffic patterns"
+          - "DNS query anomalies"
 
-      - id: pcap-exfil
-        name: "Data Exfiltration Detection"
-        difficulty: hard
-        description: "Detect data exfiltration in captures"
+      - id: http-analysis
+        name: "HTTP/S Traffic Analysis"
+        difficulty: medium
+        points: 250
+        description: "Analyze web traffic for attacks"
         skills:
-          - Protocol anomalies
-          - Covert channels
-          - Volume analysis
+          - Request/response analysis
+          - Header examination
+          - Payload extraction
+          - TLS metadata
         flags: 2
 
+      - id: dns-analysis
+        name: "DNS Traffic Analysis"
+        difficulty: medium
+        points: 250
+        description: "Analyze DNS for malicious activity"
+        skills:
+          - Query patterns
+          - DGA detection
+          - DNS tunneling
+          - Fast-flux detection
+        flags: 2
+
+  # Incident Response
   incident_response:
     name: "Incident Response"
+    description: "IR techniques and procedures"
     challenges:
       - id: ir-triage
         name: "Incident Triage"
         difficulty: medium
-        description: "Perform initial incident triage"
+        points: 250
+        description: "Rapid assessment of security incidents"
         skills:
-          - Data collection
-          - Initial analysis
-          - Prioritization
+          - Severity classification
+          - Initial scoping
+          - Evidence preservation
+          - Stakeholder communication
         flags: 2
+        process:
+          - "Identify affected systems"
+          - "Determine attack vector"
+          - "Assess data exposure"
+          - "Document timeline"
 
-      - id: ir-timeline
-        name: "Timeline Creation"
+      - id: timeline-analysis
+        name: "Super Timeline Creation"
         difficulty: hard
-        description: "Create attack timeline from artifacts"
+        points: 500
+        description: "Create comprehensive forensic timeline"
         skills:
-          - plaso/log2timeline
-          - MFT timeline
-          - Event correlation
+          - log2timeline/plaso
+          - Multiple artifact sources
+          - Timeline analysis
+          - Attack reconstruction
         flags: 4
+        tools:
+          - plaso/log2timeline
+          - Timesketch
+          - Timeline Explorer
+        sources:
+          - "MFT timestamps"
+          - "Event logs"
+          - "Prefetch"
+          - "Browser history"
+          - "Registry"
 
-      - id: ir-rootkit
-        name: "Rootkit Detection"
-        difficulty: expert
-        description: "Detect and analyze rootkits"
+      - id: lateral-movement
+        name: "Lateral Movement Detection"
+        difficulty: hard
+        points: 500
+        description: "Trace attacker movement through network"
         skills:
-          - Hidden process detection
-          - Kernel analysis
-          - Hook detection
+          - RDP analysis
+          - PsExec/WMI detection
+          - Credential usage tracking
+          - Network connections
         flags: 3
+        indicators:
+          - "Event ID 4624 Type 3/10"
+          - "Service installations"
+          - "Scheduled tasks"
+          - "Named pipe connections"
 
-      - id: ir-apt
-        name: "APT Investigation"
-        difficulty: expert
-        description: "Investigate advanced persistent threat"
+      - id: malware-persistence
+        name: "Persistence Mechanism Analysis"
+        difficulty: hard
+        points: 500
+        description: "Identify attacker persistence"
         skills:
-          - Lateral movement tracing
-          - Persistence mechanisms
-          - IOC extraction
-        flags: 5
+          - Run keys
+          - Services
+          - Scheduled tasks
+          - WMI subscriptions
+          - DLL hijacking
+        flags: 4
+        locations:
+          - "HKLM/HKCU Run/RunOnce"
+          - "Services"
+          - "Task Scheduler"
+          - "Startup folder"
+          - "WMI Event Subscriptions"
+        tools:
+          - Autoruns
+          - RECmd
+          - KAPE
 
+      - id: ransomware-ir
+        name: "Ransomware Incident Response"
+        difficulty: hard
+        points: 500
+        description: "Respond to ransomware attack"
+        skills:
+          - Variant identification
+          - Encryption analysis
+          - IOC extraction
+          - Recovery assessment
+        flags: 3
+        steps:
+          - "Isolate affected systems"
+          - "Identify ransomware variant"
+          - "Determine initial access"
+          - "Assess backup integrity"
+
+  # Steganography
   steganography:
-    name: "Steganography"
+    name: "Steganography Analysis"
+    description: "Hidden data detection"
     challenges:
       - id: steg-image
         name: "Image Steganography"
         difficulty: easy
+        points: 100
         description: "Extract hidden data from images"
         skills:
+          - LSB analysis
+          - Metadata extraction
+          - Visual inspection
+        flags: 2
+        tools:
           - steghide
           - zsteg
+          - stegsolve
           - binwalk
-        flags: 2
 
       - id: steg-audio
         name: "Audio Steganography"
         difficulty: medium
-        description: "Find hidden messages in audio"
+        points: 250
+        description: "Find hidden data in audio files"
         skills:
           - Spectrogram analysis
-          - Audacity
-          - LSB extraction
+          - LSB in audio
+          - Metadata analysis
         flags: 2
+        tools:
+          - Audacity
+          - Sonic Visualiser
+          - DeepSound
 
-      - id: steg-advanced
-        name: "Advanced Steganography"
-        difficulty: hard
-        description: "Detect sophisticated stego techniques"
+      - id: steg-document
+        name: "Document Steganography"
+        difficulty: medium
+        points: 250
+        description: "Detect hidden content in documents"
         skills:
-          - Statistical analysis
-          - Custom algorithms
-          - Encryption
-        flags: 3
+          - PDF analysis
+          - Office document analysis
+          - Embedded objects
+        flags: 2
+        tools:
+          - pdfparser
+          - oletools
+          - exiftool
 
-templates:
-  forensics_labs:
-    - name: "DFIR Workstation"
-      services:
-        - sift-workstation
-      tools:
-        - Autopsy
-        - Volatility3
-        - Plaso
-        - Sleuthkit
+# Docker Templates
+docker_templates:
+  sift_workstation:
+    name: "SIFT Workstation"
+    image: "sans/sift-workstation:latest"
+    description: "SANS Investigative Forensics Toolkit"
+    tools:
+      - Autopsy
+      - Volatility3
+      - Plaso
+      - Sleuthkit
+      - RegRipper
 
-    - name: "Memory Analysis Lab"
-      services:
-        - volatility-workstation
-      samples:
-        - Windows memory dumps
-        - Linux memory dumps
-        - Infected samples
+  remnux:
+    name: "REMnux"
+    image: "remnux/remnux-distro:focal"
+    description: "Malware analysis toolkit"
 
-    - name: "Network Forensics Lab"
-      services:
-        - wireshark-workstation
-        - zeek
-        - arkime
-      captures:
-        - Normal traffic
-        - Malware C2
-        - Exfiltration samples
+  elk_forensics:
+    name: "ELK for Forensics"
+    services:
+      - elasticsearch
+      - logstash
+      - kibana
+      - timesketch
 
-    - name: "Full IR Lab"
-      services:
-        - sift
-        - elk-stack
-        - case-management
-      features:
-        - Evidence storage
-        - Timeline tools
-        - Reporting
+# Tools Reference
+tools:
+  disk_forensics:
+    - name: "Autopsy"
+      url: "https://www.autopsy.com/"
+      description: "Digital forensics platform"
+      free: true
+    - name: "FTK Imager"
+      url: "https://www.exterro.com/ftk-imager"
+      description: "Forensic imaging tool"
+      free: true
+    - name: "Sleuthkit"
+      url: "https://www.sleuthkit.org/"
+      description: "Command-line forensic tools"
+      free: true
 
+  memory_forensics:
+    - name: "Volatility3"
+      url: "https://github.com/volatilityfoundation/volatility3"
+      description: "Memory forensics framework"
+      free: true
+    - name: "MemProcFS"
+      url: "https://github.com/ufrisk/MemProcFS"
+      description: "Memory Process File System"
+      free: true
+
+  eric_zimmerman:
+    - name: "KAPE"
+      url: "https://www.kroll.com/kape"
+      description: "Kroll Artifact Parser and Extractor"
+    - name: "MFTECmd"
+      description: "MFT parser"
+    - name: "EvtxECmd"
+      description: "Event log parser"
+    - name: "Registry Explorer"
+      description: "Registry analysis tool"
+    - name: "Timeline Explorer"
+      description: "CSV timeline viewer"
+
+  log_analysis:
+    - name: "Hayabusa"
+      url: "https://github.com/Yamato-Security/hayabusa"
+      description: "Windows event log analyzer"
+      free: true
+    - name: "Chainsaw"
+      url: "https://github.com/WithSecureLabs/chainsaw"
+      description: "Rapid Windows event log analysis"
+      free: true
+
+# Learning Resources
 resources:
-  tools:
-    - "Autopsy"
-    - "Volatility3"
-    - "Sleuthkit"
-    - "Wireshark"
-    - "FTK Imager"
-    - "Plaso"
-    - "KAPE"
-    - "Eric Zimmerman Tools"
-    - "Velociraptor"
+  training:
+    - name: "SANS DFIR"
+      url: "https://www.sans.org/digital-forensics-incident-response/"
+    - name: "13Cubed YouTube"
+      url: "https://www.youtube.com/c/13Cubed"
+      free: true
+    - name: "DFIR.training"
+      url: "https://www.dfir.training/"
+      free: true
+    - name: "CyberDefenders"
+      url: "https://cyberdefenders.org/"
+      free: true
 
   references:
-    - "SANS DFIR Posters"
-    - "13Cubed Videos"
-    - "DFIR.training"
-    - "Cyber Defenders Blue Team Labs"
+    - name: "SANS DFIR Posters"
+      url: "https://www.sans.org/posters/"
+    - name: "DFIR Cheat Sheets"
+      url: "https://www.sans.org/posters/sans-dfir-cheatsheet-booklet/"
+    - name: "This Week in 4n6"
+      url: "https://thisweekin4n6.com/"

@@ -1,0 +1,51 @@
+COMMERCIAL LICENSE AGREEMENT
+
+Security Lab Factory - Commercial Lab License
+
+1. GRANT OF LICENSE
+This license grants you, the purchaser, a non-exclusive, non-transferable
+license to use the purchased lab content ("Lab") subject to the terms below.
+
+2. PERMITTED USES
+- Personal learning and skill development
+- Use within your organization for training purposes
+- Modification for internal use only
+
+3. RESTRICTIONS
+You may NOT:
+- Redistribute, resell, or share the Lab content
+- Use the Lab for commercial training services without additional licensing
+- Remove or alter any proprietary notices
+- Create derivative works for distribution
+
+4. TEAM/ENTERPRISE LICENSING
+For team or enterprise use, please contact us for appropriate licensing:
+- Team License (5-25 users): Contact for pricing
+- Enterprise License (unlimited): Contact for pricing
+
+5. SUPPORT
+This license includes:
+- Access to updates for 1 year
+- Community support via Discord
+- Email support for technical issues
+
+6. WARRANTY DISCLAIMER
+THE LAB IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND. THE AUTHOR
+DISCLAIMS ALL WARRANTIES, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
+TO THE WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
+
+7. LIMITATION OF LIABILITY
+IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY INDIRECT, INCIDENTAL,
+SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES ARISING FROM THE USE OF
+THIS LAB.
+
+8. TERMINATION
+This license terminates automatically if you violate any of these terms.
+
+9. GOVERNING LAW
+This agreement shall be governed by applicable international law.
+
+---
+By purchasing and using this Lab, you agree to these terms.
+
+For questions: contact@security-lab-factory.com
